@@ -1,0 +1,759 @@
+MACRO ASSEMBLER SNAKE_ASSEMBLY                             12/16/14 02:20:53 PAGE     1
+
+
+DOS MACRO ASSEMBLER MA51 V06.16.13.326
+OBJECT MODULE PLACED IN D:\DROPBOX\E-COMP\9º PERíODO\MICROCONTROLADORES\SNAKE\SNAKE_ASSEMBLY.OBJ
+ASSEMBLER INVOKED BY: QUIET GENERATEDEPFILE EP SYNTAX(ASM51) PR XR PL(60) PW(80) DB OJ(D:\DROPBOX\E-COMP\9º PERíODO\MICROCONTROLADORES\SNAKE\SNAKE_ASSEMBLY.OBJ) PIN(C:\RAISONANCE\RIDE\INC;C:\RAISONANCE\RIDE\INC\51) 
+
+LOC     OBJ           LINE    SOURCE
+                         1     $INCLUDE(REG52.INC)
+                       106     $INCLUDE(RANDOM.ASM)
+                       155     $INCLUDE(LCD.ASM)
+                       328     
+  0009                 329     SNAKE_MAX_SIZE SET 0X09
+  0050                 330     SNAKE_MAX_SIZE_ADDRESS SET 0X50
+                       331     
+  0054                 332     SNAKE_SCREEN_WIDTH SET 0X54
+  0051                 333     SNAKE_SCREEN_WIDTH_ADDRESS SET 0X51
+                       334     
+  0030                 335     SNAKE_SCREEN_HEIGHT SET 0X30
+  0052                 336     SNAKE_SCREEN_HEIGHT_ADDRESS SET 0X52
+                       337     
+  00A0                 338     SNAKE_X_ARRAY_START_ADDRESS SET 0XA0
+  00B8                 339     SNAKE_Y_ARRAY_START_ADDRESS SET 0XB8
+                       340     
+  0053                 341     SNAKE_ADD_X_ADDRESS SET 0X53
+  0054                 342     SNAKE_ADD_Y_ADDRESS SET 0X54
+                       343     
+  0055                 344     SNAKE_SIZE_ADDRESS SET 0X55
+                       345     
+  0056                 346     X_TEMP SET 0X56
+  0057                 347     Y_TEMP SET 0X57
+                       348     
+  0000                 349     SNAKE_PRE_SCREEN_Y_START_ADDRESS SET 0X00
+                       350     
+                       351     CODE AT 0
+0000    7581D0         352         MOV SP, #0D0H
+0003    020006         353         LJMP SNAKE_MAIN
+                       354     
+                       355     SNAKE_MAIN: 
+0006    120000   F     356         LCALL SNAKE_CLEAR_INTERNAL_MEMORY ; limpa a região de memória da Snake
+0009    120000   F     357         LCALL SNAKE_INIT ; configura o estado inicial da Snake
+                       358         SNAKE_MAIN_LOOP: 
+000C    120000   F     359             LCALL SNAKE_CONVERT_MEMORY ; lê a memória da Snake e converte para informação pré-tela
+000F    120000   F     360             LCALL LCD_CLEAR ; limpa a tela
+0012    120000   F     361             LCALL NTMJ_DRAW_TO_LCD ; lê e região de memória que armazena as informações da Snake e imprime na tela
+0015    120000   F     362             LCALL SNAKE_READ_BUTTONS ; lê os botões e atualiza a memória
+0018    120000   F     363             LCALL SNAKE_UPDATE ; atualiza a região de memória da Snake
+001B    80EF           364             SJMP SNAKE_MAIN_LOOP
+001D    22             365         RET
+                       366     
+------                 367     CODE
+                       368     SNAKE_CLEAR_INTERNAL_MEMORY: 
+                       369         ; limpando região X
+00F9    7909           370     MOV R1 , # 9 
+00FB    78A0           371     MOV R0 , # 160 
+                       372         SNAKE_CLEAR_X_MEMORY_LOOP_START: 
+00FD    7601           373             MOV @R0, #001H
+00FF    08             374             INC R0
+MACRO ASSEMBLER SNAKE_ASSEMBLY                   12/16/14  02:20:53 PAGE     2
+                     
+0100    D9FB           375             DJNZ R1, SNAKE_CLEAR_X_MEMORY_LOOP_START
+                       376         
+                       377         ; limpando região Y
+0102    7909           378     MOV R1 , # 9 
+0104    78B8           379     MOV R0 , # 184 
+                       380         SNAKE_CLEAR_Y_MEMORY_LOOP_START: 
+0106    7601           381             MOV @R0, #001H
+0108    08             382             INC R0
+0109    D9FB           383             DJNZ R1, SNAKE_CLEAR_Y_MEMORY_LOOP_START
+010B    22             384         RET
+                       385         
+------                 386     CODE
+                       387     SNAKE_INIT: 
+010C    7850           388     MOV R0 , # 80 
+010E    7609           389     MOV @ R0 , # 9 
+                       390         
+0110    7851           391     MOV R0 , # 81 
+0112    7654           392     MOV @ R0 , # 84 
+                       393         
+0114    7852           394     MOV R0 , # 82 
+0116    7630           395     MOV @ R0 , # 48 
+                       396         
+                       397         ; a snake começa com duas partes
+0118    7855           398     MOV R0 , # 85 
+011A    7602           399         MOV @R0, #02H
+                       400     
+011C    120000   F     401         LCALL RAND8 ; gera um número aleatório no acumulador
+011F    78A0           402     MOV R0 , # 160 
+0121    F6             403         MOV @R0, A ; seta posição X inicial da comida ; x[0] = rand
+0122    08             404         INC R0
+0123    7601           405         MOV @R0, #01H ; x[1] = 1
+0125    08             406         INC R0
+0126    7601           407         MOV @R0 #01H ; x[2] = 1
+                       408         
+0128    120000   F     409         LCALL RAND8 ; gera um número aleatório no acumulador
+012B    78B8           410     MOV R0 , # 184 
+012D    F6             411         MOV @R0, A ; seta posição Y inicial da comida ; y[0] = rand
+012E    08             412         INC R0
+012F    7602           413         MOV @R0, #02H ; y[1] = 2
+0131    08             414         INC R0
+0132    7601           415         MOV @R0, #01H ; y[2] = 1
+                       416         
+0134    7853           417     MOV R0 , # 83 
+0136    7600           418         MOV @R0, #00H
+0138    7854           419     MOV R0 , # 84 
+013A    7601           420         MOV @R0, #01H
+013C    22             421         RET
+                       422         
+------                 423     CODE
+                       424     NTMJ_EXTRACT_LCD_COLUMN: 
+013D    C0E0           425         PUSH ACC
+013F    E583           426         MOV A, DPH
+0141    C0E0           427         PUSH ACC
+0143    E582           428         MOV A, DPL
+0145    C0E0           429         PUSH ACC
+0147    7D00           430         MOV R5, #0
+0149    7B08           431         MOV R3, #8 ; Contador de bits buscados
+MACRO ASSEMBLER SNAKE_ASSEMBLY                   12/16/14  02:20:53 PAGE     3
+                     
+                       432         NTMJ_EXTRACT_LCD_LOOP:  
+014B    E0             433             MOVX A, @DPTR
+014C    FC             434             MOV R4, A ; Salva o pixel em R4
+014D    ED             435             MOV A, R5
+014E    23             436             RL A ; Rotaciona o valor anterior
+014F    4C             437             ORL A, R4 ; Adiciona o pixel lido agora
+0150    FD             438             MOV R5, A ; Sobrescreve o valor anterior
+0151    75F054         439             MOV B, #84 ; Vai buscar o proximo
+0154    120000   F     440             LCALL NTMJ_INC_DPTR
+0157    DBF2           441             DJNZ R3 NTMJ_EXTRACT_LCD_LOOP
+0159    8DF0           442         MOV B, R5
+015B    D0E0           443         POP ACC
+015D    F582           444         MOV DPL, A
+015F    D0E0           445         POP ACC
+0161    F583           446         MOV DPH, A
+0163    D0E0           447         POP ACC
+0165    22             448         RET
+                       449      
+------                 450     CODE
+                       451     NTMJ_DRAW_TO_LCD: 
+0166    C0D0           452         PUSH PSW ; Salva a pagina atual
+0168    C0E0           453         PUSH ACC ; Salva o ACC atual
+016A    D2D4           454         SETB RS1 ; Vai para a pagina do LCD
+016C    D2D3           455         SETB RS0 ; Vai para a pagina do LCD
+016E    120000   F     456         LCALL LCD_CLEAR
+0171    900000         457         MOV DPTR, #000H 
+0174    7E06           458         MOV R6, #6 ; Laco externo eh y
+0176    7A00           459     MOV R2 , # 0 
+                       460         NTMJ_DRAW_LCD_LINE: 
+0178    7900           461     MOV R1 , # 0 
+017A    7F54           462             MOV R7, #84 ; Laco interno eh x
+                       463             NTMJ_DRAW_LCD_COLUMN: 
+017C    120000   F     464                 LCALL NTMJ_EXTRACT_LCD_COLUMN
+017F    A8F0           465     MOV R0 , B 
+0181    E9             466     MOV A , R1 
+0182    8AF0           467     MOV B , R2 
+0184    120000   F     468                 LCALL LCD_ACC_XY
+0187    88F0           469     MOV B , R0 
+0189    120000   F     470                 LCALL LCD_ACC_DRAW
+018C    09             471     INC R1 
+018D    75F001         472                 MOV B, #1
+0190    120000   F     473                 LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
+0193    DFE7           474                 DJNZ R7 NTMJ_DRAW_LCD_COLUMN ; Diminui o contador de colunas e repete ate q complete
+0195    0A             475     INC R2 
+0196    75F0FC         476                 MOV B, #252
+0199    120000   F     477                 LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
+019C    75F0FC         478                 MOV B, #252
+019F    120000   F     479                 LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
+01A2    75F054         480                 MOV B, #84
+01A5    120000   F     481                 LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
+01A8    DECE           482                 DJNZ R6 NTMJ_DRAW_LCD_LINE ; Diminui o contador de linhas e repete ate q complete
+                       483      
+01AA    D0E0           484         POP ACC ; Restaura o ACC anterior
+01AC    D0D0           485         POP PSW ; Restaura a pagina anterior
+01AE    22             486         RET
+                       487         
+------                 488     CODE
+MACRO ASSEMBLER SNAKE_ASSEMBLY                   12/16/14  02:20:53 PAGE     4
+                     
+                       489     NTMJ_INC_DPTR: 
+01AF    C0E0           490         PUSH ACC
+01B1    E582           491         MOV A, DPL ; Pega o DPL pra ACC
+01B3    25F0           492         ADD A, B ; Soma B (pula um byte)
+01B5    F582           493         MOV DPL, A ; Salva no DPL o ACC
+01B7    E583           494         MOV A, DPH ; Pega o DPH pro ACC
+01B9    3400           495         ADDC A, #00H ; Adiciona o carry da operacao anterior
+01BB    F583           496         MOV DPH, A ; Salva no DPH o ACC
+01BD    D0E0           497         POP ACC
+01BF    22             498         RET
+                       499     
+                       500     
+------                 501     CODE
+                       502     LCD_ACC_XY: 
+01C0    C0E0           503         PUSH ACC 
+01C2    C0D0           504         PUSH PSW 
+01C4    D2D4           505         SETB RS1
+01C6    C2D3           506         CLR RS0
+01C8    F9             507     MOV R1 , A 
+01C9    AAF0           508     MOV R2 , B 
+01CB    120000   F     509         LCALL LCD_XY
+01CE    D0D0           510         POP PSW
+01D0    D0E0           511         POP ACC
+01D2    22             512         RET
+                       513     	
+------                 514     CODE
+                       515     LCD_ACC_DRAW: 
+01D3    C0E0           516         PUSH ACC 
+01D5    C0D0           517         PUSH PSW 
+01D7    D2D4           518         SETB RS1
+01D9    C2D3           519         CLR RS0
+01DB    A8F0           520     MOV R0 , B 
+01DD    120000   F     521         LCALL LCD_DRAW
+01E0    D0D0           522         POP PSW
+01E2    D0E0           523         POP ACC
+01E4    22             524         RET
+                       525     
+------                 526     CODE
+                       527     SNAKE_UPDATE: 
+01E5    7855           528     MOV R0 , # 85 
+01E7    E6             529         MOV A, @R0
+01E8    FB             530         MOV R3, A
+                       531         LOOP_UPDATE_BODY: 
+01E9    EB             532             MOV A, R3
+01EA    B40101         533             CJNE A, #001H, BODY
+01ED    D3             534             SETB C
+                       535         BODY: 
+01EE    4017           536             JC AFTER_LOOP
+                       537             
+01F0    EB             538             MOV    A, R3
+01F1    249F           539     ADD A , # 160 + 0FFH 
+
+*** WARNING #53 IN LINE 215 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\snake_assembly.asm : VALUE HAS BEEN TRUNCATED TO 8 BITS
+01F3    F8             540             MOV    R0, A
+01F4    EB             541             MOV    A, R3
+01F5    24A0           542     ADD A , # 160 
+01F7    F9             543             MOV    R1, A
+01F8    E6             544             MOV    A, @R0
+01F9    F7             545             MOV    @R1, A
+MACRO ASSEMBLER SNAKE_ASSEMBLY                   12/16/14  02:20:53 PAGE     5
+                     
+                       546             
+01FA    EB             547             MOV    A, R3
+01FB    24B7           548     ADD A , # 184 + 0FFH 
+
+*** WARNING #53 IN LINE 224 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\snake_assembly.asm : VALUE HAS BEEN TRUNCATED TO 8 BITS
+01FD    F8             549             MOV    R0, A
+01FE    EB             550             MOV    A, R3
+01FF    24B8           551     ADD A , # 184 
+0201    F9             552             MOV    R1, A
+0202    E6             553             MOV    A, @R0
+0203    F7             554             MOV    @R1, A
+                       555             
+0204    1B             556             DEC R3
+0205    80E2           557             SJMP LOOP_UPDATE_BODY
+                       558         AFTER_LOOP: 
+0207    7853           559     MOV R0 , # 83 
+0209    E6             560            MOV A, @R0
+020A    78A2           561     MOV R0 , # 160 + 02H 
+020C    26             562            ADD A, @R0
+020D    78A1           563     MOV R0 , # 160 + 01H 
+020F    F6             564            MOV @R0, A
+                       565            
+0210    7854           566     MOV R0 , # 84 
+0212    E6             567            MOV A, @R0
+0213    78BA           568     MOV R0 , # 184 + 02H 
+0215    26             569            ADD A, @R0
+0216    78B9           570     MOV R0 , # 184 + 01H 
+0218    F6             571            MOV @R0, A
+0219    22             572         RET
+                       573         
+------                 574     CODE
+                       575     SNAKE_READ_BUTTONS: 
+                       576         CHECK_LEFT: 
+021A    309211         577             JNB P1.2, CHECK_RIGHT
+                       578             
+                       579             ;  addy = 0;
+021D    E4             580             CLR A
+021E    F554           581     MOV 84 , A 
+                       582             
+                       583             ; if (addx != 1)
+0220    E553           584     MOV A , 83 
+0222    6401           585             XRL A, #001H
+0224    6005           586             JZ ELSE_CHECK_LEFT
+                       587             
+                       588             ; addx = -1;
+0226    7553FF         589     MOV 83 , # 0FFH 
+0229    8003           590             SJMP CHECK_RIGHT
+                       591             
+                       592             ELSE_CHECK_LEFT: 
+                       593                 ; addx = 1;
+022B    755301         594     MOV 83 , # 001H 
+                       595             
+                       596         CHECK_RIGHT: 
+022E    309313         597             JNB P1.3, CHECK_DOWN
+                       598             
+                       599             ;  addy = 0;
+0231    E4             600             CLR A
+0232    F554           601     MOV 84 , A 
+                       602             
+MACRO ASSEMBLER SNAKE_ASSEMBLY                   12/16/14  02:20:53 PAGE     6
+                     
+0234    B4FF05         603             CJNE A, #0FFH, NOT_EQUAL
+0237    E553           604     MOV A , 83 
+0239    F4             605             CPL A
+023A    6005           606             JZ ELSE_CHECK_RIGHT
+                       607             
+                       608             NOT_EQUAL: 
+023C    755301         609     MOV 83 , # 001H 
+023F    8003           610                 SJMP CHECK_DOWN
+                       611             ELSE_CHECK_RIGHT: 
+0241    7553FF         612     MOV 83 , # 0FFH 
+                       613                  
+                       614         CHECK_DOWN: 
+0244    209113         615             JB P1.1, CHECK_UP
+0247    E4             616             CLR    A
+0248    F554           617     MOV 84 , A 
+024A    B4FF05         618             CJNE   A,#0FFH,NOT_EQUAL_CHECK_DOWN
+024D    E554           619     MOV A , 84 
+024F    F4             620             CPL    A
+0250    6000           621             JZ     NOT_EQUAL_CHECK_DOWN
+                       622             
+                       623             NOT_EQUAL_CHECK_DOWN: 
+0252    755401         624     MOV 84 , # 001H 
+0255    8003           625                 SJMP   CHECK_UP
+                       626             CHECK_DOWN_ELSE: 
+0257    7554FF         627     MOV 84 , # 0FFH 
+                       628             
+                       629         CHECK_UP: 
+025A    209010         630             JB     P1.0, CHECK_BUTTONS_END
+025D    E4             631             CLR    A
+025E    F553           632     MOV 83 , A 
+0260    E554           633     MOV A , 84 
+0262    6401           634             XRL    A,#001H
+0264    6004           635             JZ     CHECK_UP_ELSE
+0266    7554FF         636     MOV 84 , # 0FFH 
+0269    22             637             RET
+                       638             CHECK_UP_ELSE: 
+026A    755401         639     MOV 84 , # 001H 
+                       640             CHECK_BUTTONS_END: 
+026D    22             641         RET
+                       642         
+------                 643     CODE
+                       644     SNAKE_CONVERT_MEMORY: 
+                       645         ; limpa a memoria antes de popular (sempre populo todos pixels)
+026E    7D00           646         MOV    R5,#000H
+                       647         SNAKE_CONVERT_MEMORY_LOOP_CLEAN_MEMORY_I: 
+0270    ED             648             MOV    A,R5
+0271    B43000         649     CJNE A , # 48 , SNAKE_CONVERT_MEMORY_LOOP_SHIFT_I 
+                       650             SNAKE_CONVERT_MEMORY_LOOP_SHIFT_I: 
+0274    5029           651             JNC    SNAKE_CONVERT_MEMORY_LOOP_CLEAN_END_I
+                       652     
+0276    7E00           653             MOV    R6,#000H
+                       654             SNAKE_CONVERT_MEMORY_LOOP_CLEAN_MEMORY_J: 
+0278    EE             655                 MOV    A,R6
+0279    B45400         656     CJNE A , # 84 , SNAKE_CONVERT_MEMORY_LOOP_SHIFT_J 
+                       657                 SNAKE_CONVERT_MEMORY_LOOP_SHIFT_J: 
+027C    501E           658                 JNC    SNAKE_CONVERT_MEMORY_LOOP_CLEAN_END_J
+                       659     
+MACRO ASSEMBLER SNAKE_ASSEMBLY                   12/16/14  02:20:53 PAGE     7
+                     
+027E    ED             660                 MOV    A,R5
+027F    75F054         661                 MOV    B,#054H
+0282    A4             662                 MUL    AB
+0283    2400           663     ADD A , # LOW ( 0 ) 
+0285    F582           664                 MOV    DPL,A
+0287    E5F0           665                 MOV    A,B
+0289    3400           666     ADDC A , # HIGH ( 0 ) 
+028B    F583           667                 MOV    DPH,A
+028D    EE             668                 MOV    A,R6
+028E    2582           669                 ADD    A,DPL
+0290    F582           670                 MOV    DPL,A
+0292    E4             671                 CLR    A
+0293    3583           672                 ADDC   A,DPH
+0295    F583           673                 MOV    DPH,A
+0297    E4             674                 CLR    A
+0298    F0             675                 MOVX   @DPTR,A
+                       676     
+0299    0E             677                 INC    R6
+029A    80DC           678                 SJMP   SNAKE_CONVERT_MEMORY_LOOP_CLEAN_MEMORY_J
+                       679             SNAKE_CONVERT_MEMORY_LOOP_CLEAN_END_J: 
+                       680     
+029C    0D             681             INC    R5
+029D    80D1           682             SJMP   SNAKE_CONVERT_MEMORY_LOOP_CLEAN_MEMORY_I
+                       683         SNAKE_CONVERT_MEMORY_LOOP_CLEAN_END_I: 
+                       684                 
+                       685             ; faz a conversão
+029F    7C01           686             MOV    R4,#001H
+                       687             SNAKE_CONVERT_MEMORY_LOOP: 
+02A1    7409           688     MOV A , # 9 
+02A3    2401           689                   ADD    A,#001H
+02A5    F8             690                   MOV    R0,A
+02A6    E4             691                   CLR    A
+02A7    33             692                   RLC    A
+02A8    AB00           693                   MOV    R3,AR0
+02AA    F5F0           694                   MOV    B,A
+02AC    B2F7           695                   CPL    B.7
+02AE    7480           696                   MOV    A,#080H
+02B0    B5F004         697                   CJNE   A,B,SNAKE_CONVERT_MEMORY_SHIFT
+02B3    EC             698                   MOV    A,R4
+                       699     
+                       700     
+02B4    B50300         701                   CJNE   A,AR3,SNAKE_CONVERT_MEMORY_SHIFT
+                       702                   SNAKE_CONVERT_MEMORY_SHIFT: 
+02B7    4003           703                   JC     $ + 5
+02B9    020000   F     704                   LJMP   SNAKE_CONVERT_MEMORY_LOOP_END
+                       705     
+02BC    EC             706                   MOV    A,R4
+02BD    24A0           707     ADD A , # 160 
+02BF    F8             708                   MOV    R0,A
+02C0    E6             709                   MOV    A,@R0
+02C1    25E0           710                   ADD    A,ACC
+02C3    F556           711     MOV 86 , A 
+                       712     
+02C5    EC             713                   MOV    A,R4
+02C6    24B8           714     ADD A , # 184 
+02C8    F8             715                   MOV    R0,A
+02C9    E6             716                   MOV    A,@R0
+MACRO ASSEMBLER SNAKE_ASSEMBLY                   12/16/14  02:20:53 PAGE     8
+                     
+02CA    25E0           717                   ADD    A,ACC
+                       718     
+02CC    FB             719                   MOV    R3,A
+                       720     
+02CD    F557           721     MOV 87 , A 
+                       722     
+02CF    E556           723     MOV A , 86 
+02D1    75F054         724                   MOV    B,#054H
+02D4    A4             725                   MUL    AB
+02D5    2400           726     ADD A , # LOW ( 0 ) 
+02D7    F582           727                   MOV    DPL,A
+02D9    E5F0           728                   MOV    A,B
+02DB    3400           729     ADDC A , # HIGH ( 0 ) 
+02DD    F583           730                   MOV    DPH,A
+02DF    EB             731                   MOV    A,R3
+02E0    2582           732                   ADD    A,DPL
+02E2    F582           733                   MOV    DPL,A
+02E4    E4             734                   CLR    A
+02E5    3583           735                   ADDC   A,DPH
+02E7    F583           736                   MOV    DPH,A
+02E9    7401           737                   MOV    A,#001H
+02EB    F0             738                   MOVX   @DPTR,A
+                       739     
+02EC    E556           740     MOV A , 86 
+02EE    75F054         741                   MOV    B,#054H
+02F1    A4             742                   MUL    AB
+02F2    2454           743                   ADD    A,#LOW (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 054H)
+02F4    F582           744                   MOV    DPL,A
+02F6    E5F0           745                   MOV    A,B
+02F8    3400           746                   ADDC   A,#HIGH (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 054H)
+02FA    F583           747                   MOV    DPH,A
+02FC    EB             748                   MOV    A,R3
+02FD    2582           749                   ADD    A,DPL
+02FF    F582           750                   MOV    DPL,A
+0301    E4             751                   CLR    A
+0302    3583           752                   ADDC   A,DPH
+0304    F583           753                   MOV    DPH,A
+0306    7401           754                   MOV    A,#001H
+0308    F0             755                   MOVX   @DPTR,A
+                       756     
+0309    E556           757     MOV A , 86 
+030B    75F054         758                   MOV    B,#054H
+                       759     
+                       760                    
+030E    A4             761                   MUL    AB
+030F    2401           762                   ADD    A,#LOW (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 01H)
+0311    F582           763                   MOV    DPL,A
+0313    E5F0           764                   MOV    A,B
+0315    3400           765                   ADDC   A,#HIGH (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 01H)
+0317    F583           766                   MOV    DPH,A
+0319    EB             767                   MOV    A,R3
+031A    2582           768                   ADD    A,DPL
+031C    F582           769                   MOV    DPL,A
+031E    E4             770                   CLR    A
+031F    3583           771                   ADDC   A,DPH
+0321    F583           772                   MOV    DPH,A
+0323    7401           773                   MOV    A,#001H
+MACRO ASSEMBLER SNAKE_ASSEMBLY                   12/16/14  02:20:53 PAGE     9
+                     
+0325    F0             774                   MOVX   @DPTR,A
+                       775     
+0326    E556           776     MOV A , 86 
+0328    75F054         777                   MOV    B,#054H
+032B    A4             778                   MUL    AB
+032C    2455           779                   ADD    A,#LOW (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 055H)
+032E    F582           780                   MOV    DPL,A
+0330    E5F0           781                   MOV    A,B
+0332    3400           782                   ADDC   A,#HIGH (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 055H)
+0334    F583           783                   MOV    DPH,A
+0336    EB             784                   MOV    A,R3
+0337    2582           785                   ADD    A,DPL
+0339    F582           786                   MOV    DPL,A
+033B    E4             787                   CLR    A
+033C    3583           788                   ADDC   A,DPH
+033E    F583           789                   MOV    DPH,A
+0340    7401           790                   MOV    A,#001H
+0342    F0             791                   MOVX   @DPTR,A
+                       792     
+0343    0C             793                   INC    R4
+0344    020000   F     794                   LJMP   SNAKE_CONVERT_MEMORY_LOOP
+                       795             SNAKE_CONVERT_MEMORY_LOOP_END: 
+0347    22             796             RET     
+                       797     
+                       798     
+                       799         
+                       800     END
+MACRO ASSEMBLER SNAKE_ASSEMBLY                             12/16/14 02:20:53 PAGE     0
+
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES             REFERENCES
+
+LCD_DRAW . . . . .  C ADDR   006FH   R  SEG=?PR?SNAKE_ASSEMBLY  220# 521 
+BIG_DELAY. . . . .  C ADDR   00ECH   R  SEG=?PR?SNAKE_ASSEMBLY  188 317# 
+RCAP2H . . . . . .  D ADDR   00CBH   A                          33# 
+DPL. . . . . . . .  D ADDR   0082H   A                          16# 428 444 491 493 
+                                                                664 669 670 727 732 
+                                                                733 744 749 750 763 
+                                                                768 769 780 785 786 
+                                                                
+P0 . . . . . . . .  D ADDR   0080H   A                          8# 
+SNAKE_PRE_SCREEN_~  N NUMB   0000h                              349# 663 666 726 
+                                                                729 743 746 762 765 
+                                                                779 782 
+P1 . . . . . . . .  D ADDR   0090H   A                          9# 157 158 159 577 
+                                                                597 615 630 
+CHECK_BUTTONS_END.  C ADDR   026DH   R  SEG=?PR?SNAKE_ASSEMBLY  630 640# 
+CHECK_UP . . . . .  C ADDR   025AH   R  SEG=?PR?SNAKE_ASSEMBLY  615 625 629# 
+INIT_DELAY . . . .  C ADDR   00F2H   R  SEG=?PR?SNAKE_ASSEMBLY  323# 324 
+CP_RL2 . . . . . .  B ADDR   00C8H.0 A                          105# 
+EXEN2. . . . . . .  B ADDR   00C8H.3 A                          102# 
+B. . . . . . . . .  D ADDR   00F0H   A                          14# 148 152 439 442 
+                                                                465 467 469 472 476 
+                                                                478 480 492 508 520 
+                                                                661 665 694 695 697 
+                                                                724 728 741 745 758 
+                                                                764 777 781 
+P2 . . . . . . . .  D ADDR   00A0H   A                          10# 
+SNAKE_CONVERT_MEM~  C ADDR   02A1H   R  SEG=?PR?SNAKE_ASSEMBLY  687# 794 
+SNAKE_CONVERT_MEM~  C ADDR   029FH   R  SEG=?PR?SNAKE_ASSEMBLY  651 683# 
+ELSE_CHECK_RIGHT .  C ADDR   0241H   R  SEG=?PR?SNAKE_ASSEMBLY  606 611# 
+LCD_XY . . . . . .  C ADDR   00B3H   R  SEG=?PR?SNAKE_ASSEMBLY  273# 509 
+LCD_SEND_SERIAL_D~  C ADDR   007FH   R  SEG=?PR?SNAKE_ASSEMBLY  230 233# 
+T2EX . . . . . . .  B ADDR   0090H.1 A                          95# 
+PS . . . . . . . .  B ADDR   00B8H.4 A                          65# 
+SP . . . . . . . .  D ADDR   0081H   A                          15# 352 
+P3 . . . . . . . .  D ADDR   00B0H   A                          11# 160 161 
+ar0. . . . . . . .  ? ADDR   0000H   A                          693 
+SNAKE_CONVERT_MEM~  C ADDR   029CH   R  SEG=?PR?SNAKE_ASSEMBLY  658 679# 
+T0 . . . . . . . .  B ADDR   00B0H.4 A                          74# 
+AC . . . . . . . .  B ADDR   00D0H.6 A                          41# 
+RCAP2L . . . . . .  D ADDR   00CAH   A                          32# 
+SNAKE_CONVERT_MEM~  C ADDR   0270H   R  SEG=?PR?SNAKE_ASSEMBLY  647# 682 
+NTMJ_DRAW_LCD_COL~  C ADDR   017CH   R  SEG=?PR?SNAKE_ASSEMBLY  463# 474 
+SNAKE_INIT . . . .  C ADDR   010CH   R  SEG=?PR?SNAKE_ASSEMBLY  357 387# 
+REN. . . . . . . .  B ADDR   0098H.4 A                          83# 
+T1 . . . . . . . .  B ADDR   00B0H.5 A                          73# 
+OV . . . . . . . .  B ADDR   00D0H.2 A                          45# 
+SNAKE_CONVERT_MEM~  C ADDR   0278H   R  SEG=?PR?SNAKE_ASSEMBLY  654# 678 
+LCD_ACC_DRAW . . .  C ADDR   01D3H   R  SEG=?PR?SNAKE_ASSEMBLY  470 515# 
+LCD_INIT . . . . .  C ADDR   0035H   R  SEG=?PR?SNAKE_ASSEMBLY  180# 
+T2 . . . . . . . .  B ADDR   0090H.0 A                          96# 
+EA . . . . . . . .  B ADDR   00A8H.7 A                          58# 
+T2CON. . . . . . .  D ADDR   00C8H   A                          31# 
+ar3. . . . . . . .  ? ADDR   0003H   A                          701 
+SNAKE_CONVERT_MEM~  C ADDR   02B7H   R  SEG=?PR?SNAKE_ASSEMBLY  697 701 702# 
+ACC. . . . . . . .  D ADDR   00E0H   A                          13# 143 181 216 230 
+                                                                244 254 260 270 274 
+                                                                291 296 313 425 427 
+                                                                429 443 445 447 453 
+                                                                484 490 497 503 511 
+                                                                516 523 710 717 
+SNAKE_CONVERT_MEM~  C ADDR   0274H   R  SEG=?PR?SNAKE_ASSEMBLY  649 650# 
+NOT_EQUAL. . . . .  C ADDR   023CH   R  SEG=?PR?SNAKE_ASSEMBLY  603 608# 
+CHECK_LEFT . . . .  C ADDR   021AH   R  SEG=?PR?SNAKE_ASSEMBLY  576# 
+C_T2 . . . . . . .  B ADDR   00C8H.1 A                          104# 
+SNAKE_CONVERT_MEM~  C ADDR   027CH   R  SEG=?PR?SNAKE_ASSEMBLY  656 657# 
+LOOP_UPDATE_BODY .  C ADDR   01E9H   R  SEG=?PR?SNAKE_ASSEMBLY  531# 557 
+LCD_ACC_XY . . . .  C ADDR   01C0H   R  SEG=?PR?SNAKE_ASSEMBLY  468 502# 
+SNAKE_SCREEN_HEIG~  N NUMB   0030h                              335# 395 649 
+LCD_SEND_SERIAL_D~  C ADDR   0076H   R  SEG=?PR?SNAKE_ASSEMBLY  228# 238 
+WR . . . . . . . .  B ADDR   00B0H.6 A                          72# 
+ET0. . . . . . . .  B ADDR   00A8H.1 A                          62# 
+CHECK_UP_ELSE. . .  C ADDR   026AH   R  SEG=?PR?SNAKE_ASSEMBLY  635 638# 
+SNAKE_CONVERT_MEM~  C ADDR   026EH   R  SEG=?PR?SNAKE_ASSEMBLY  359 644# 
+LCD_X. . . . . . .  ? ADDR   0000H   A                          164# 286 300 461 
+                                                                466 471 507 
+RAND16REG. . . . .  N NUMB   0021h                              112# 132 134 137 
+                                                                138 142 147 149 151 
+                                                                
+ET1. . . . . . . .  B ADDR   00A8H.3 A                          60# 
+MACRO ASSEMBLER SNAKE_ASSEMBLY                             12/16/14 02:20:53 PAGE     1
+
+
+DOS MACRO ASSEMBLER MA51 V06.16.13.326
+OBJECT MODULE PLACED IN D:\DROPBOX\E-COMP\9º PERíODO\MICROCONTROLADORES\SNAKE\SNAKE_ASSEMBLY.OBJ
+ASSEMBLER INVOKED BY: QUIET GENERATEDEPFILE EP SYNTAX(ASM51) PR XR PL(60) PW(80) DB OJ(D:\DROPBOX\E-COMP\9º PERíODO\MICROCONTROLADORES\SNAKE\SNAKE_ASSEMBLY.OBJ) PIN(C:\RAISONANCE\RIDE\INC;C:\RAISONANCE\RIDE\INC\51) 
+
+LOC     OBJ           LINE    SOURCE
+TF0. . . . . . . .  B ADDR   0088H.5 A                          51# 
+AFTER_LOOP . . . .  C ADDR   0207H   R  SEG=?PR?SNAKE_ASSEMBLY  536 558# 
+NTMJ_INC_DPTR. . .  C ADDR   01AFH   R  SEG=?PR?SNAKE_ASSEMBLY  440 473 477 479 481 
+                                                                489# 
+LCD_Y. . . . . . .  ? ADDR   0000H   A                          165# 281 301 459 
+                                                                467 475 508 
+ET2. . . . . . . .  B ADDR   00A8H.5 A                          91# 
+TF1. . . . . . . .  B ADDR   0088H.7 A                          49# 
+SNAKE_CLEAR_INTER~  C ADDR   00F9H   R  SEG=?PR?SNAKE_ASSEMBLY  356 368# 
+LCD_CLK. . . . . .  B ADDR   00B0H.1 A                          160# 229 236 
+RAND16 . . . . . .  C ADDR   0011H   R  SEG=?PR?SNAKE_ASSEMBLY  131# 
+RCLK . . . . . . .  B ADDR   00C8H.5 A                          100# 
+TF2. . . . . . . .  B ADDR   00C8H.7 A                          98# 
+RB8. . . . . . . .  B ADDR   0098H.2 A                          85# 
+TH0. . . . . . . .  D ADDR   008CH   A                          23# 
+SNAKE_CLEAR_X_MEM~  C ADDR   00FDH   R  SEG=?PR?SNAKE_ASSEMBLY  372# 375 
+X_TEMP . . . . . .  N NUMB   0056h                              346# 711 723 740 
+                                                                757 776 
+LCD_DIN. . . . . .  B ADDR   00B0H.0 A                          161# 231 234 
+EX0. . . . . . . .  B ADDR   00A8H.0 A                          63# 
+IT0. . . . . . . .  B ADDR   0088H.0 A                          56# 
+TH1. . . . . . . .  D ADDR   008DH   A                          24# 
+BODY . . . . . . .  C ADDR   01EEH   R  SEG=?PR?SNAKE_ASSEMBLY  533 535# 
+SNAKE_CLEAR_Y_MEM~  C ADDR   0106H   R  SEG=?PR?SNAKE_ASSEMBLY  380# 383 
+Y_TEMP . . . . . .  N NUMB   0057h                              347# 721 
+SNAKE_SCREEN_HEIG~  N NUMB   0052h                              336# 394 
+RAND16B. . . . . .  C ADDR   001EH   R  SEG=?PR?SNAKE_ASSEMBLY  133 135 139# 
+TCLK . . . . . . .  B ADDR   00C8H.4 A                          101# 
+TB8. . . . . . . .  B ADDR   0098H.3 A                          84# 
+RXD. . . . . . . .  B ADDR   00B0H.0 A                          78# 
+EX1. . . . . . . .  B ADDR   00A8H.2 A                          61# 
+IT1. . . . . . . .  B ADDR   0088H.2 A                          54# 
+TH2. . . . . . . .  D ADDR   00CDH   A                          35# 
+IE . . . . . . . .  D ADDR   00A8H   A                          25# 
+SNAKE_MAIN_LOOP. .  C ADDR   000CH   A                          358# 364 
+RAND16C. . . . . .  C ADDR   0028H   R  SEG=?PR?SNAKE_ASSEMBLY  143 145# 
+ELSE_CHECK_LEFT. .  C ADDR   022BH   R  SEG=?PR?SNAKE_ASSEMBLY  586 592# 
+SNAKE_SCREEN_WIDTH  N NUMB   0054h                              332# 392 656 
+SM0. . . . . . . .  B ADDR   0098H.7 A                          80# 
+TXD. . . . . . . .  B ADDR   00B0H.1 A                          77# 
+P. . . . . . . . .  B ADDR   00D0H.0 A                          47# 123 141 
+SBUF . . . . . . .  D ADDR   0099H   A                          28# 
+TL0. . . . . . . .  D ADDR   008AH   A                          21# 
+PCON . . . . . . .  D ADDR   0087H   A                          18# 
+SNAKE_SIZE_ADDRESS  N NUMB   0055h                              344# 398 528 
+SNAKE_MAX_SIZE . .  N NUMB   0009h                              329# 370 378 389 
+                                                                688 
+?PR?SNAKE_ASSEMBLY  C SEG    0348H      REL=UNIT                115# 130 179 219 
+                                                                224 241 257 272 294 
+                                                                316 367 386 423 450 
+                                                                488 501 514 526 574 
+                                                                643 
+SM1. . . . . . . .  B ADDR   0098H.6 A                          81# 
+TL1. . . . . . . .  D ADDR   008BH   A                          22# 
+NTMJ_EXTRACT_LCD_~  C ADDR   013DH   R  SEG=?PR?SNAKE_ASSEMBLY  424# 464 
+SM2. . . . . . . .  B ADDR   0098H.5 A                          82# 
+TL2. . . . . . . .  D ADDR   00CCH   A                          34# 
+INIT_DELAY_2 . . .  C ADDR   00F0H   R  SEG=?PR?SNAKE_ASSEMBLY  321# 325 
+SCON . . . . . . .  D ADDR   0098H   A                          27# 
+SNAKE_UPDATE . . .  C ADDR   01E5H   R  SEG=?PR?SNAKE_ASSEMBLY  363 527# 
+INIT_DELAY_3 . . .  C ADDR   00EEH   R  SEG=?PR?SNAKE_ASSEMBLY  319# 326 
+LCD_SEND_SERIAL_D~  C ADDR   0073H   R  SEG=?PR?SNAKE_ASSEMBLY  225# 250 266 
+PT0. . . . . . . .  B ADDR   00B8H.1 A                          68# 
+TMOD . . . . . . .  D ADDR   0089H   A                          20# 
+TCON . . . . . . .  D ADDR   0088H   A                          19# 
+CHECK_DOWN . . . .  C ADDR   0244H   R  SEG=?PR?SNAKE_ASSEMBLY  597 610 614# 
+SNAKE_SCREEN_WIDT~  N NUMB   0051h                              333# 391 
+MACRO ASSEMBLER SNAKE_ASSEMBLY                             12/16/14 02:20:53 PAGE     2
+
+LCD_CLEAR_INTERNA~  C ADDR   00DCH   R  SEG=?PR?SNAKE_ASSEMBLY  305# 311 
+LCD_SEND_DATA. . .  C ADDR   009DH   R  SEG=?PR?SNAKE_ASSEMBLY  221 258# 309 
+LCD_RESET. . . . .  B ADDR   0090H.5 A                          158# 185 
+EXF2 . . . . . . .  B ADDR   00C8H.6 A                          99# 
+PT1. . . . . . . .  B ADDR   00B8H.3 A                          66# 
+RS0. . . . . . . .  B ADDR   00D0H.3 A                          44# 184 247 263 277 
+                                                                299 455 506 519 
+SNAKE_MAIN . . . .  C ADDR   0006H   A                          353 355# 
+SNAKE_ADD_X_ADDRE~  N NUMB   0053h                              341# 417 559 584 
+                                                                589 594 604 609 612 
+                                                                632 
+SNAKE_MAX_SIZE_AD~  N NUMB   0050h                              330# 388 
+LCD_SERIAL_END_IF.  C ADDR   0081H   R  SEG=?PR?SNAKE_ASSEMBLY  232 235# 
+PT2. . . . . . . .  B ADDR   00B8H.5 A                          93# 
+RD . . . . . . . .  B ADDR   00B0H.7 A                          71# 
+TR0. . . . . . . .  B ADDR   0088H.4 A                          52# 
+RS1. . . . . . . .  B ADDR   00D0H.4 A                          43# 183 246 262 276 
+                                                                298 454 505 518 
+F0 . . . . . . . .  B ADDR   00D0H.5 A                          42# 
+SNAKE_ADD_Y_ADDRE~  N NUMB   0054h                              342# 419 566 581 
+                                                                601 617 619 624 627 
+                                                                633 636 639 
+TR1. . . . . . . .  B ADDR   0088H.6 A                          50# 
+F1 . . . . . . . .  B ADDR   00D0H.1 A                          46# 
+TR2. . . . . . . .  B ADDR   00C8H.2 A                          103# 
+PX0. . . . . . . .  B ADDR   00B8H.0 A                          69# 
+ES . . . . . . . .  B ADDR   00A8H.4 A                          59# 
+SNAKE_CONVERT_MEM~  C ADDR   0347H   R  SEG=?PR?SNAKE_ASSEMBLY  704 795# 
+SNAKE_X_ARRAY_STA~  N NUMB   00A0h                              338# 371 402 539 
+                                                                542 561 563 707 
+LCD_CLEAR. . . . .  C ADDR   00CEH   R  SEG=?PR?SNAKE_ASSEMBLY  207 295# 360 456 
+                                                                
+LCD_DC . . . . . .  B ADDR   0090H.7 A                          159# 248 264 
+PX1. . . . . . . .  B ADDR   00B8H.2 A                          67# 
+IP . . . . . . . .  D ADDR   00B8H   A                          26# 
+NTMJ_DRAW_TO_LCD .  C ADDR   0166H   R  SEG=?PR?SNAKE_ASSEMBLY  361 451# 
+SNAKE_Y_ARRAY_STA~  N NUMB   00B8h                              339# 379 410 548 
+                                                                551 568 570 714 
+LCD_SEND_COMMAND .  C ADDR   0087H   R  SEG=?PR?SNAKE_ASSEMBLY  193 196 199 202 205 
+                                                                210 213 242# 284 
+                                                                289 
+LCD_CE . . . . . .  B ADDR   0090H.6 A                          157# 186 249 251 
+                                                                265 267 
+PSW. . . . . . . .  D ADDR   00D0H   A                          12# 182 215 245 253 
+                                                                261 269 275 290 297 
+                                                                312 452 485 504 510 
+                                                                517 522 
+CHECK_RIGHT. . . .  C ADDR   022EH   R  SEG=?PR?SNAKE_ASSEMBLY  577 590 596# 
+SNAKE_READ_BUTTONS  C ADDR   021AH   R  SEG=?PR?SNAKE_ASSEMBLY  362 575# 
+LCD_CLEAR_INTERNA~  C ADDR   00DEH   R  SEG=?PR?SNAKE_ASSEMBLY  307# 310 
+RAND8REG . . . . .  N NUMB   0020h                              111# 117 120 124 
+                                                                126 
+RI . . . . . . . .  B ADDR   0098H.0 A                          87# 
+INT0 . . . . . . .  B ADDR   00B0H.2 A                          76# 
+NOT_EQUAL_CHECK_D~  C ADDR   0252H   R  SEG=?PR?SNAKE_ASSEMBLY  618 621 623# 
+LCD_BUS. . . . . .  ? ADDR   0000H   A                          163# 192 195 198 
+                                                                201 204 209 212 227 
+                                                                283 288 308 465 469 
+                                                                520 
+INT1 . . . . . . .  B ADDR   00B0H.3 A                          75# 
+CY . . . . . . . .  B ADDR   00D0H.7 A                          40# 
+DPH. . . . . . . .  D ADDR   0083H   A                          17# 426 446 494 496 
+                                                                667 672 673 730 735 
+                                                                736 747 752 753 766 
+                                                                771 772 783 788 789 
+                                                                
+CHECK_DOWN_ELSE. .  C ADDR   0257H   R  SEG=?PR?SNAKE_ASSEMBLY  626# 
+RAND8. . . . . . .  C ADDR   0000H   R  SEG=?PR?SNAKE_ASSEMBLY  116# 401 409 
+TI . . . . . . . .  B ADDR   0098H.1 A                          86# 
+NTMJ_EXTRACT_LCD_~  C ADDR   014BH   R  SEG=?PR?SNAKE_ASSEMBLY  432# 441 
+IE0. . . . . . . .  B ADDR   0088H.1 A                          55# 
+NTMJ_DRAW_LCD_LINE  C ADDR   0178H   R  SEG=?PR?SNAKE_ASSEMBLY  460# 482 
+RAND8B . . . . . .  C ADDR   0007H   R  SEG=?PR?SNAKE_ASSEMBLY  118 121# 
+IE1. . . . . . . .  B ADDR   0088H.3 A                          53# 
+SNAKE_ASSEMBLY . .  N NUMB   -----
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    870    ----
+   XDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+REGISTER BANK(S) USED : 0 
+
+ASSEMBLY COMPLETE.   2 WARNING(S)   0 ERROR(S)

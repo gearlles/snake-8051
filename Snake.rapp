@@ -1,0 +1,45 @@
+
+<ApplicationBuild Header="Snake" Extern=".\Snake.rapp" Path=".\Snake.rapp" OutputFile=".\Snake.aof" sate="98" >
+	<NodeASM Path=".\snake_assembly.asm" Header="snake_assembly.asm" Marker="-1" OutputFile=".\snake_assembly.obj" sate="0" />
+	<NodeASM Path=".\Random.asm" Header="Random.asm" Marker="0" OutputFile=".\Random.obj" sate="0" >
+		<Options>
+			<Config Header="Standard" >
+				<Set Header="NodeASM" >
+					<Section Header="Build" >
+						<Property Header="Exclude" Value="Yes" Removable="1" />
+						<Property Header="LinkExclude" Value="Yes" Removable="1" />
+					</Section>
+				</Set>
+			</Config>
+		</Options>
+	</NodeASM>
+	<NodeASM Path=".\LCD.asm" Header="LCD.asm" Marker="0" OutputFile=".\LCD.obj" sate="0" >
+		<Options>
+			<Config Header="Standard" >
+				<Set Header="NodeASM" >
+					<Section Header="Build" >
+						<Property Header="Exclude" Value="Yes" Removable="1" />
+					</Section>
+				</Set>
+			</Config>
+		</Options>
+	</NodeASM>
+	<Options>
+		<Config Header="Standard" >
+			<Set Header="ApplicationBuild" >
+				<Section Header="General" >
+					<Property Header="TargetFamily" Value="80C51" />
+				</Section>
+			</Set>
+			<Set Header="Target" >
+				<Section Header="Processor80C51" >
+					<Property Header="Processor" Value="AT89LS53" Removable="1" />
+				</Section>
+				<Section Header="ToolSet80C51" >
+					<Property Header="BuildToolSet80C51" Value="80C51\RaisonanceTools.config" Removable="1" />
+					<Property Header="ArelocInfo" Value="" Removable="1" />
+				</Section>
+			</Set>
+		</Config>
+	</Options>
+</ApplicationBuild>
