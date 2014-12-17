@@ -1,6 +1,6 @@
 $include(REG52.inc)
 $include(Random.asm)
-$include(LCD.asm)
+
 
 SNAKE_MAX_SIZE SET 0x09
 SNAKE_MAX_SIZE_ADDRESS SET 0x50
@@ -19,8 +19,11 @@ SNAKE_ADD_Y_ADDRESS SET 0x54
 
 SNAKE_SIZE_ADDRESS SET 0x55
 
+; variaveis globais temporarias
 x_temp SET 0x56
 y_temp SET 0x57
+k SET 0x58
+i SET 0x59
 
 SNAKE_PRE_SCREEN_Y_START_ADDRESS SET 0x00
 
@@ -29,20 +32,27 @@ code at 0
     ljmp SNAKE_MAIN
 
 SNAKE_MAIN:
-    LCALL SNAKE_CLEAR_INTERNAL_MEMORY ; limpa a região de memória da Snake
-    LCALL SNAKE_INIT ; configura o estado inicial da Snake
+    LCALL LCD_INIT
+    ; limpa a regiao de memoria da Snake
+    LCALL SNAKE_CLEAR_INTERNAL_MEMORY
+    ; configura o estado inicial da Snake
+    LCALL SNAKE_INIT
     SNAKE_MAIN_LOOP:
-        LCALL SNAKE_CONVERT_MEMORY ; lê a memória da Snake e converte para informação pré-tela
-        LCALL LCD_CLEAR ; limpa a tela
-        LCALL NTMJ_DRAW_TO_LCD ; lê e região de memória que armazena as informações da Snake e imprime na tela
-        LCALL SNAKE_READ_BUTTONS ; lê os botões e atualiza a memória
-        LCALL SNAKE_UPDATE ; atualiza a região de memória da Snake
+        ; le a memoria da Snake e converte para informacao pre-tela
+        LCALL SNAKE_CONVERT_MEMORY
+        ; le e regiao de memoria que armazena 
+        ; as informacoes da Snake e imprime na tela
+        LCALL NTMJ_DRAW_TO_LCD
+        ; le os botoes e atualiza a memoria
+        LCALL SNAKE_READ_BUTTONS
+        ; atualiza a regiao de memoria da Snake
+        LCALL SNAKE_UPDATE
         SJMP SNAKE_MAIN_LOOP
     RET
 
 code
 SNAKE_CLEAR_INTERNAL_MEMORY:
-    ; limpando região X
+    ; limpando regiao X
     MOV R1, #SNAKE_MAX_SIZE
     MOV R0, #SNAKE_X_ARRAY_START_ADDRESS
     SNAKE_CLEAR_X_MEMORY_LOOP_START:
@@ -50,7 +60,7 @@ SNAKE_CLEAR_INTERNAL_MEMORY:
         INC R0
         DJNZ R1, SNAKE_CLEAR_X_MEMORY_LOOP_START
     
-    ; limpando região Y
+    ; limpando regiao Y
     MOV R1, #SNAKE_MAX_SIZE
     MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
     SNAKE_CLEAR_Y_MEMORY_LOOP_START:
@@ -70,21 +80,21 @@ SNAKE_INIT:
     MOV R0, #SNAKE_SCREEN_HEIGHT_ADDRESS
     MOV @R0, #SNAKE_SCREEN_HEIGHT
     
-    ; a snake começa com duas partes
+    ; a snake comeca com duas partes
     MOV R0, #SNAKE_SIZE_ADDRESS
     MOV @R0, #02h
 
-    LCALL RAND8 ; gera um número aleatório no acumulador
+    LCALL RAND8 ; gera um numero aleatorio no acumulador
     MOV R0, #SNAKE_X_ARRAY_START_ADDRESS
-    MOV @R0, A ; seta posição X inicial da comida ; x[0] = rand
+    MOV @R0, A ; seta posicao X inicial da comida ; x[0] = rand
     INC R0
     MOV @R0, #01h ; x[1] = 1
     INC R0
     MOV @R0 #01h ; x[2] = 1
     
-    LCALL RAND8 ; gera um número aleatório no acumulador
+    LCALL RAND8 ; gera um numero aleatorio no acumulador
     MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
-    MOV @R0, A ; seta posição Y inicial da comida ; y[0] = rand
+    MOV @R0, A ; seta posicao Y inicial da comida ; y[0] = rand
     INC R0
     MOV @R0, #02H ; y[1] = 2
     INC R0
@@ -147,7 +157,8 @@ NTMJ_DRAW_TO_LCD:
             INC lcd_X
             MOV B, #1
             LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
-            DJNZ R7 NTMJ_DRAW_LCD_COLUMN ; Diminui o contador de colunas e repete ate q complete
+            ; Diminui o contador de colunas e repete ate q complete
+            DJNZ R7 NTMJ_DRAW_LCD_COLUMN
             INC lcd_Y
             MOV B, #252
             LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
@@ -155,7 +166,8 @@ NTMJ_DRAW_TO_LCD:
             LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
             MOV B, #84
             LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
-            DJNZ R6 NTMJ_DRAW_LCD_LINE ; Diminui o contador de linhas e repete ate q complete
+            ; Diminui o contador de linhas e repete ate q complete
+            DJNZ R6 NTMJ_DRAW_LCD_LINE
  
     POP ACC ; Restaura o ACC anterior
     POP PSW ; Restaura a pagina anterior
@@ -200,7 +212,62 @@ LCD_ACC_DRAW:
     ret
 
 code
+SNAKE_CHECK_GAME_END:
+    CLR k
+    MOV A, SNAKE_SIZE_ADDRESS
+    CJNE A, SNAKE_MAX_SIZE, SNAKE_ELSE_MAX
+
+    SETB k
+
+    SNAKE_ELSE_MAX:
+          MOV A, SNAKE_X_ARRAY_START_ADDRESS+01H
+          CJNE A, #054H, SNAKE_CHECK_HEIGHT
+          SETB C
+          SNAKE_CHECK_HEIGHT:
+                JNC SNAKE_FIRST_IF_SET
+                MOV A, SNAKE_Y_ARRAY_START_ADDRESS+01H
+                CJNE A, #030H, SNAKE_IF_EXIT
+                SETB C
+          SNAKE_IF_EXIT:
+                JC SNAKE_AFTER_FIRST_IF
+    SNAKE_FIRST_IF_SET:
+          SETB k
+    SNAKE_AFTER_FIRST_IF:
+          MOV i, #002H
+    SNAKE_COLISION_MAIN_LOOP:
+          MOV A, i
+          CJNE A, SNAKE_SIZE_ADDRESS, SNAKE_COLITION_MAIN_LOOP_BODY
+    SNAKE_COLITION_MAIN_LOOP_BODY:
+          JNC SNAKE_COLISION_END_LOOP
+          MOV A, i
+          ADD A, #SNAKE_X_ARRAY_START_ADDRESS
+          MOV R0, A
+          MOV B, @R0
+          MOV A, SNAKE_X_ARRAY_START_ADDRESS+01H
+          CJNE A, B, SNAKE_COLISION_NEXT_ITERATION
+          MOV A, i
+          ADD A, #SNAKE_Y_ARRAY_START_ADDRESS
+          MOV R1, A
+          MOV B, @R1
+          MOV A, SNAKE_Y_ARRAY_START_ADDRESS+01H
+          CJNE A, B, SNAKE_COLISION_NEXT_ITERATION
+          SETB k
+    SNAKE_COLISION_NEXT_ITERATION:
+          INC i
+          SJMP SNAKE_COLISION_MAIN_LOOP
+    SNAKE_COLISION_END_LOOP:
+          MOV C, k
+          CLR A
+          RLC A
+          MOV R6, #000H
+          MOV R7, A
+    RET
+
+code
 SNAKE_UPDATE:
+    LCALL SNAKE_CHECK_GAME_END
+    JC SNAKE_MAIN
+        
     MOV R0, #SNAKE_SIZE_ADDRESS
     MOV A, @R0
     MOV R3, A
@@ -358,7 +425,7 @@ SNAKE_CONVERT_MEMORY:
         SJMP   SNAKE_CONVERT_MEMORY_LOOP_CLEAN_MEMORY_I
     SNAKE_CONVERT_MEMORY_LOOP_CLEAN_END_I:
             
-        ; faz a conversão
+        ; faz a conversao
         MOV    R4,#001H
         SNAKE_CONVERT_MEMORY_LOOP:
               MOV    A,#SNAKE_MAX_SIZE
@@ -470,7 +537,4 @@ SNAKE_CONVERT_MEMORY:
               LJMP   SNAKE_CONVERT_MEMORY_LOOP
         SNAKE_CONVERT_MEMORY_LOOP_END:
         RET     
-
-
-    
 END
