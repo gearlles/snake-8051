@@ -2,7 +2,7 @@ $include(REG52.inc)
 $include(Random.asm)
 
 
-SNAKE_MAX_SIZE SET 0x02
+SNAKE_MAX_SIZE SET 0x09
 SNAKE_MAX_SIZE_ADDRESS SET 0x50
 
 SNAKE_SCREEN_WIDTH SET 0x54
@@ -56,7 +56,7 @@ SNAKE_CLEAR_INTERNAL_MEMORY:
     MOV R1, #SNAKE_MAX_SIZE
     MOV R0, #SNAKE_X_ARRAY_START_ADDRESS
     SNAKE_CLEAR_X_MEMORY_LOOP_START:
-        MOV @R0, #001h
+        MOV @R0, #000h
         INC R0
         DJNZ R1, SNAKE_CLEAR_X_MEMORY_LOOP_START
     
@@ -64,7 +64,7 @@ SNAKE_CLEAR_INTERNAL_MEMORY:
     MOV R1, #SNAKE_MAX_SIZE
     MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
     SNAKE_CLEAR_Y_MEMORY_LOOP_START:
-        MOV @R0, #001h
+        MOV @R0, #000h
         INC R0
         DJNZ R1, SNAKE_CLEAR_Y_MEMORY_LOOP_START
     RET
@@ -432,75 +432,70 @@ SNAKE_CONVERT_MEMORY:
         SNAKE_CONVERT_MEMORY_LOOP_END:
         RET     
 
-code
-NTMJ_EXTRACT_LCD_COLUMN:
-    PUSH ACC
-    MOV A, DPH
-    PUSH ACC
-    MOV A, DPL
-    PUSH ACC
-    MOV R5, #0
-    MOV R3, #8 ; Contador de bits buscados
-    NTMJ_EXTRACT_LCD_LOOP: 
-        MOVX A, @DPTR
-        MOV R4, A ; Salva o pixel em R4
-        MOV A, R5
-        RL A ; Rotaciona o valor anterior
-        ORL A, R4 ; Adiciona o pixel lido agora
-        MOV R5, A ; Sobrescreve o valor anterior
-        MOV B, #84 ; Vai buscar o proximo
-        LCALL NTMJ_INC_DPTR
-        DJNZ R3 NTMJ_EXTRACT_LCD_LOOP
-    MOV B, R5
-    POP ACC
-    MOV DPL, A
-    POP ACC
-    MOV DPH, A
-    POP ACC
-    RET
- 
+; Transfere e tela da memoria para o LCD
 code
 NTMJ_DRAW_TO_LCD:
     PUSH PSW ; Salva a pagina atual
     PUSH ACC ; Salva o ACC atual
     SETB RS1 ; Vai para a pagina do LCD
     SETB RS0 ; Vai para a pagina do LCD
-    LCALL LCD_CLEAR
-    MOV DPTR, #000h 
-    MOV R6, #6 ; Laco externo eh y
-    MOV lcd_Y, #0 ; Comeca em 00
+    LCALL LCD_CLEAR ; Limpa o display
+    MOV DPTR, #00h ; Vai para o comeco da tela na memoria
+    MOV A, #0 ; Vai para o comeco da tela no LCD
+    MOV B, #0 ; Vai para o comeco da tela no LCD
+    LCALL LCD_ACC_XY ; Vai para o comeco da tela no LCD
+    MOV R6, #6 ; Quantidade de linhas a serem andadas no display
     NTMJ_DRAW_LCD_LINE:
-        MOV lcd_X, #0 ; Comeca em 00
-        MOV R7, #84 ; Laco interno eh x
+        MOV R7, #84 ; Quantidade de colunas a serem andadas no display
         NTMJ_DRAW_LCD_COLUMN:
-            LCALL NTMJ_EXTRACT_LCD_COLUMN
-            MOV lcd_bus, B
-            MOV A, lcd_X
-            MOV B, lcd_Y
-            LCALL LCD_ACC_XY
-            MOV B, lcd_bus
-            LCALL LCD_ACC_DRAW
-            INC lcd_X
-            MOV B, #1
-            LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
-            ; Diminui o contador de colunas e repete ate q complete
-            DJNZ R7 NTMJ_DRAW_LCD_COLUMN
-            INC lcd_Y
-            MOV B, #252
-            LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
-            MOV B, #252
-            LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
-            MOV B, #84
-            LCALL NTMJ_INC_DPTR ; Vai para a proxima coluna
-            ; Diminui o contador de linhas e repete ate q complete
-            DJNZ R6 NTMJ_DRAW_LCD_LINE
- 
+            LCALL NTMJ_EXTRACT_LCD_COLUMN ; Salva em B o resultado do extract column
+            LCALL LCD_ACC_DRAW ; Usa o B resultante anterior pra desenhar no LCD
+            INC DPTR ; Aponta para a proxima coluna, na memoria
+            DJNZ R7 NTMJ_DRAW_LCD_COLUMN ; Se ainda restam colunas a visitar, refaz
+            MOV B, #252 ; Vai para a proxima linha Y
+            LCALL NTMJ_ADD_DPTR ; Vai para a proxima linha Y
+            MOV B, #252 ; Vai para a proxima linha Y
+            LCALL NTMJ_ADD_DPTR ; Vai para a proxima linha Y
+            MOV B, #84 ; Vai para a proxima linha Y
+            LCALL NTMJ_ADD_DPTR ; Vai para a proxima linha Y
+            DJNZ R6 NTMJ_DRAW_LCD_LINE ; Se ainda restarem linhas a visitar, refaz
+    MOV A, #2
+    MOV B, #0
+    LCALL LCD_ACC_XY
     POP ACC ; Restaura o ACC anterior
     POP PSW ; Restaura a pagina anterior
     RET
+
+; Extrai um byte de coluna da representa da tela, em memoria
+code
+NTMJ_EXTRACT_LCD_COLUMN:
+    PUSH ACC ; Guarda o acumulador atual
+    MOV A, DPH ; Guarda o DPH
+    PUSH ACC ; Guarda o DPH
+    MOV A, DPL ; Guarda o DPL
+    PUSH ACC ; Guarda o DPL
+    MOV R5, #0 ; Resultado
+    MOV R3, #8 ; Contador de bytes a serem utilizados
+    NTMJ_EXTRACT_LCD_LOOP: 
+        MOVX A, @DPTR ; Le o byte atual
+        MOV R4, A ; Salva o byte atual em R4
+        MOV A, R5 ; Recupera o resultado mais recente
+        ORL A, R4 ; Adiciona o byte atual no resultado
+        RR A ; Rotaciona o novo resultado
+        MOV R5, A ; Sobrescreve o resultado antigo pelo atualizado
+        MOV B, #84 ; Avanca para o endereco do proximo byte
+        LCALL NTMJ_ADD_DPTR ; Avanca para o endereco do proximo byte
+        DJNZ R3 NTMJ_EXTRACT_LCD_LOOP ; Se ainda nao atingiu a qtd de bytes, faz de novo
+    MOV B, R5 ; Salva o resultado em B, para retorno
+    POP ACC ; Recupera o DPL
+    MOV DPL, A ; Recupera o DPL
+    POP ACC ; Recupera o DPH
+    MOV DPH, A ; Recupera o DPH
+    POP ACC ; Recupera o ACC
+    RET 
     
 code
-NTMJ_INC_DPTR:
+NTMJ_ADD_DPTR:
     PUSH ACC
     MOV A, DPL ; Pega o DPL pra ACC
     ADD A, B ; Soma B (pula um byte)
