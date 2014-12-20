@@ -19,11 +19,12 @@ SNAKE_ADD_Y_ADDRESS SET 0x54
 
 SNAKE_SIZE_ADDRESS SET 0x55
 
-; variaveis globais temporarias
+; variaveis globais temporarias (em minusculo!)
 x_temp SET 0x56
 y_temp SET 0x57
 k SET 0x58
 i SET 0x59
+j SET 0x60
 
 SNAKE_PRE_SCREEN_Y_START_ADDRESS SET 0x00
 
@@ -319,118 +320,63 @@ SNAKE_CONVERT_MEMORY:
         SJMP   SNAKE_CONVERT_MEMORY_LOOP_CLEAN_MEMORY_I
     SNAKE_CONVERT_MEMORY_LOOP_CLEAN_END_I:
             
-        ; faz a conversao
-        MOV    R4,#001H
-        SNAKE_CONVERT_MEMORY_LOOP:
-              MOV    A,#SNAKE_MAX_SIZE
-              ADD    A,#001H
-              MOV    R0,A
-              CLR    A
-              RLC    A
-              MOV    R3,AR0
-              MOV    B,A
-              CPL    B.7
-              MOV    A,#080H
-              CJNE   A,B,SNAKE_CONVERT_MEMORY_SHIFT
-              MOV    A,R4
-
-
-              CJNE   A,AR3,SNAKE_CONVERT_MEMORY_SHIFT
-              SNAKE_CONVERT_MEMORY_SHIFT:
-              JC     $ + 5
-              LJMP   SNAKE_CONVERT_MEMORY_LOOP_END
-
-              MOV    A,R4
-              ADD    A,#SNAKE_X_ARRAY_START_ADDRESS
-              MOV    R0,A
-              MOV    A,@R0
-              ADD    A,ACC
-              MOV    x_temp,A
-
-              MOV    A,R4
-              ADD    A,#SNAKE_Y_ARRAY_START_ADDRESS
-              MOV    R0,A
-              MOV    A,@R0
-              ADD    A,ACC
-
-              MOV    R3,A
-
-              MOV    y_temp,A
-
-              MOV    A,x_temp
-              MOV    B,#054H
-              MUL    AB
-              ADD    A,#LOW (SNAKE_PRE_SCREEN_Y_START_ADDRESS)
-              MOV    DPL,A
-              MOV    A,B
-              ADDC   A,#HIGH (SNAKE_PRE_SCREEN_Y_START_ADDRESS)
-              MOV    DPH,A
-              MOV    A,R3
-              ADD    A,DPL
-              MOV    DPL,A
-              CLR    A
-              ADDC   A,DPH
-              MOV    DPH,A
-              MOV    A,#001H
-              MOVX   @DPTR,A
-
-              MOV    A,x_temp
-              MOV    B,#054H
-              MUL    AB
-              ADD    A,#LOW (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 054H)
-              MOV    DPL,A
-              MOV    A,B
-              ADDC   A,#HIGH (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 054H)
-              MOV    DPH,A
-              MOV    A,R3
-              ADD    A,DPL
-              MOV    DPL,A
-              CLR    A
-              ADDC   A,DPH
-              MOV    DPH,A
-              MOV    A,#001H
-              MOVX   @DPTR,A
-
-              MOV    A,x_temp
-              MOV    B,#054H
-
-               
-              MUL    AB
-              ADD    A,#LOW (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 01H)
-              MOV    DPL,A
-              MOV    A,B
-              ADDC   A,#HIGH (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 01H)
-              MOV    DPH,A
-              MOV    A,R3
-              ADD    A,DPL
-              MOV    DPL,A
-              CLR    A
-              ADDC   A,DPH
-              MOV    DPH,A
-              MOV    A,#001H
-              MOVX   @DPTR,A
-
-              MOV    A,x_temp
-              MOV    B,#054H
-              MUL    AB
-              ADD    A,#LOW (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 055H)
-              MOV    DPL,A
-              MOV    A,B
-              ADDC   A,#HIGH (SNAKE_PRE_SCREEN_Y_START_ADDRESS + 055H)
-              MOV    DPH,A
-              MOV    A,R3
-              ADD    A,DPL
-              MOV    DPL,A
-              CLR    A
-              ADDC   A,DPH
-              MOV    DPH,A
-              MOV    A,#001H
-              MOVX   @DPTR,A
-
-              INC    R4
-              LJMP   SNAKE_CONVERT_MEMORY_LOOP
+  ; faz a conversao
+    MOV    i,  #000H
+    SNAKE_CONVERT_MEMORY_LOOP:
+        MOV    A, i
+        CJNE   A, SNAKE_SIZE_ADDRESS, SNAKE_CONVERT_MEMORY_LOOP_I
+    SNAKE_CONVERT_MEMORY_LOOP_I:
+        JNC    SNAKE_CONVERT_MEMORY_LOOP_END
+        MOV    A, i
+        ADD    A, #SNAKE_X_ARRAY_START_ADDRESS
+        MOV    R0, A
+        MOV    A, @R0
+        ADD    A, ACC
+        MOV    x_temp, A
+        
+        MOV    A, i
+        ADD    A, #SNAKE_Y_ARRAY_START_ADDRESS
+        MOV    R0, A
+        MOV    A, @R0
+        ADD    A, ACC
+        MOV    y_temp, A
+        
+        MOV    j, #000H
+    SNAKE_CONVERT_MEMORY_LOOP_J:
+        MOV    k, #000H
+    SNAKE_CONVERT_MEMORY_LOOP_K:
+        MOV    A, k
+        ADD    A, y_temp ; A <- k + y
+        MOV    B,  #054H
+        MUL    AB  ; A <- (k+y) * width
+        
+        MOV    DPL,  A
+        MOV    DPH,  B ; dptr <- (k + y) * width
+        
+        MOV    A,  j
+        ADD    A,  x_temp ; A <- x + j
+        
+        ADD    A,  DPL
+        MOV    DPL,  A
+        MOV    A,  DPH
+        ADDC   A,  #000H
+        MOV    DPH,  A ; dptr <- (y + k) * width + (x + j)
+        
+        MOV    A, #001H
+        MOVX   @DPTR, A
+        
+        INC    k
+        MOV    A, k
+        CJNE   A, #002H, SNAKE_CONVERT_MEMORY_LOOP_K
+        
+        INC    j
+        MOV    A, j
+        CJNE   A, #002H, SNAKE_CONVERT_MEMORY_LOOP_J
+        
+        INC    i
+        SJMP   SNAKE_CONVERT_MEMORY_LOOP
         SNAKE_CONVERT_MEMORY_LOOP_END:
-        RET     
+    RET     
 
 ; Transfere e tela da memoria para o LCD
 code
@@ -452,10 +398,13 @@ NTMJ_DRAW_TO_LCD:
             LCALL LCD_ACC_DRAW ; Usa o B resultante anterior pra desenhar no LCD
             INC DPTR ; Aponta para a proxima coluna, na memoria
             DJNZ R7 NTMJ_DRAW_LCD_COLUMN ; Se ainda restam colunas a visitar, refaz
-            MOV B, #252 ; Vai para a proxima linha Y
-            LCALL NTMJ_ADD_DPTR ; Vai para a proxima linha Y
-            MOV B, #252 ; Vai para a proxima linha Y
-            LCALL NTMJ_ADD_DPTR ; Vai para a proxima linha Y
+            ; neste trecho, o cursor esta na ultima coluna da linha
+            ; para ir para proxima linha temos q fazer dptr + 7*84
+            ; que eh a mesma coisa que fazer dptr + 3*84 + 3*83 + 84
+            MOV B, #252 
+            LCALL NTMJ_ADD_DPTR 
+            MOV B, #252 
+            LCALL NTMJ_ADD_DPTR 
             MOV B, #84 ; Vai para a proxima linha Y
             LCALL NTMJ_ADD_DPTR ; Vai para a proxima linha Y
             DJNZ R6 NTMJ_DRAW_LCD_LINE ; Se ainda restarem linhas a visitar, refaz
