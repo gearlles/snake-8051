@@ -3,21 +3,17 @@ $include(Random.asm)
 $include(LCD.asm)
 
 SNAKE_MAX_SIZE SET 0x09
-SNAKE_MAX_SIZE_ADDRESS SET 0x50
 
 SNAKE_SCREEN_WIDTH SET 0x54
-SNAKE_SCREEN_WIDTH_ADDRESS SET 0x51
-
 SNAKE_SCREEN_HEIGHT SET 0x30
-SNAKE_SCREEN_HEIGHT_ADDRESS SET 0x52
 
-SNAKE_X_ARRAY_START_ADDRESS SET 0xA0
-SNAKE_Y_ARRAY_START_ADDRESS SET 0xB8
+SNAKE_X_ARRAY_START_ADDRESS SET 0x38
+SNAKE_Y_ARRAY_START_ADDRESS SET 0x50
 
-SNAKE_ADD_X_ADDRESS SET 0x53
-SNAKE_ADD_Y_ADDRESS SET 0x54
+SNAKE_ADD_X_ADDRESS SET 0x30
+SNAKE_ADD_Y_ADDRESS SET 0x31
 
-SNAKE_SIZE_ADDRESS SET 0x55
+SNAKE_SIZE_ADDRESS SET 0x32
 
 ; variaveis globais temporarias (em minusculo!)
 x_temp SET 0x56
@@ -26,11 +22,14 @@ k SET 0x58
 i SET 0x59
 j SET 0x60
 
+
 SNAKE_PRE_SCREEN_Y_START_ADDRESS SET 0x00
 
 code at 0
-    MOV SP, #080h
+    MOV SP, #068h
     ljmp SNAKE_MAIN
+    
+
 
 SNAKE_MAIN:
     LCALL LCD_INIT
@@ -72,15 +71,6 @@ SNAKE_CLEAR_INTERNAL_MEMORY:
 
 code
 SNAKE_INIT:
-    MOV R0, #SNAKE_MAX_SIZE_ADDRESS
-    MOV @R0, #SNAKE_MAX_SIZE
-    
-    MOV R0, #SNAKE_SCREEN_WIDTH_ADDRESS
-    MOV @R0, #SNAKE_SCREEN_WIDTH
-    
-    MOV R0, #SNAKE_SCREEN_HEIGHT_ADDRESS
-    MOV @R0, #SNAKE_SCREEN_HEIGHT
-    
     ; a snake comeca com duas partes
     MOV R0, #SNAKE_SIZE_ADDRESS
     MOV @R0, #04h
@@ -128,6 +118,47 @@ SNAKE_UPDATE:
     LCALL SNAKE_MAIN
     
     SNAKE_UPDATE_START:
+    
+    ; checar se comeu
+    ; (x[0] == x[1] + addx)
+    MOV R0, #00H
+    MOV A, SNAKE_ADD_X_ADDRESS
+    MOV R0, #SNAKE_X_ARRAY_START_ADDRESS
+    INC R0
+    ADD A, @R0 ; A <- addx + x[1]
+    MOV R5, A ; R5 <- addx + x[1]
+    MOV R6, SNAKE_X_ARRAY_START_ADDRESS ; R6 <- x[0]
+    MOV B, R6
+    CJNE A, B, SNAKE_UPDATE_END_CHECK_FOOD
+    
+    ; (y[0] == y[1] + addy)
+    MOV A, SNAKE_ADD_Y_ADDRESS
+    MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
+    INC R0
+    ADD A, @R0 ; A <- addy + y[1]
+    MOV R5, A ; R5 <- addy + y[1]
+    MOV R6, SNAKE_Y_ARRAY_START_ADDRESS ; R6 <- y[0]
+    MOV B, R6
+    CJNE A, B, SNAKE_UPDATE_END_CHECK_FOOD
+    
+    ; posiciona nova comida
+    LCALL RAND8 ; gera um numero aleatorio no acumulador
+    MOV B, #14h
+    DIV AB
+    MOV A, B
+    MOV R0, #SNAKE_X_ARRAY_START_ADDRESS
+    MOV @R0, A
+    
+    LCALL RAND8 ; gera um numero aleatorio no acumulador
+    MOV B, #14h
+    DIV AB
+    MOV A, B
+    MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
+    MOV @R0, A
+    
+    SNAKE_UPDATE_END_CHECK_FOOD:
+    
+    
         MOV R0, #SNAKE_SIZE_ADDRESS
         MOV A, @R0
         MOV R3, A
@@ -269,7 +300,7 @@ SNAKE_READ_BUTTONS:
              MOV SNAKE_ADD_X_ADDRESS, #0FFH
              
     CHECK_DOWN:
-        JB P1.1, CHECK_UP
+        JB P1.0, CHECK_UP
         CLR    A
         MOV    SNAKE_ADD_X_ADDRESS,A
         CJNE   A,#0FFH,NOT_EQUAL_CHECK_DOWN
@@ -284,7 +315,7 @@ SNAKE_READ_BUTTONS:
             MOV    SNAKE_ADD_Y_ADDRESS,#0FFH
         
     CHECK_UP:
-        JB     P1.0, CHECK_BUTTONS_END
+        JB     P1.1, CHECK_BUTTONS_END
         CLR    A
         MOV    SNAKE_ADD_X_ADDRESS,A
         MOV    A,SNAKE_ADD_Y_ADDRESS
@@ -499,3 +530,5 @@ LCD_ACC_DRAW:
     POP PSW
     POP ACC
     ret
+
+END
