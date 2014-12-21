@@ -94,11 +94,11 @@ SNAKE_INIT:
     INC R0
     MOV @R0, #03h ; x[1] = 1
     INC R0
-    MOV @R0 #02h ; x[2] = 1
+    MOV @R0 #03h ; x[2] = 1
     INC R0
-    MOV @R0 #01h ; x[3] = 1
+    MOV @R0 #03h ; x[3] = 1
     INC R0
-    MOV @R0 #00h ; x[3] = 1
+    MOV @R0 #03h ; x[3] = 1
     
     LCALL RAND8 ; gera um numero aleatorio no acumulador
     MOV B, #SNAKE_SCREEN_HEIGHT
@@ -107,13 +107,13 @@ SNAKE_INIT:
     MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
     MOV @R0, A ; seta posicao Y inicial da comida ; y[0] = rand
     INC R0
-    MOV @R0, #02H ; y[1] = 2
+    MOV @R0, #04H ; y[1] = 2
+    INC R0
+    MOV @R0, #03H ; y[2] = 1
     INC R0
     MOV @R0, #02H ; y[2] = 1
     INC R0
-    MOV @R0, #02H ; y[2] = 1
-    INC R0
-    MOV @R0, #02H ; y[2] = 1
+    MOV @R0, #01H ; y[2] = 1
     
     MOV R0, #SNAKE_ADD_X_ADDRESS
     MOV @R0, #00H
@@ -231,7 +231,7 @@ SNAKE_CHECK_GAME_END:
 code
 SNAKE_READ_BUTTONS:
     CHECK_LEFT:
-        JNB P1.2, CHECK_RIGHT
+        JB P1.2, CHECK_RIGHT
         
         ;  addy = 0;
         CLR A
@@ -251,7 +251,7 @@ SNAKE_READ_BUTTONS:
             MOV SNAKE_ADD_X_ADDRESS, #001H
         
     CHECK_RIGHT:
-        JNB P1.3, CHECK_DOWN
+        JB P1.3, CHECK_DOWN
         
         ;  addy = 0;
         CLR A
@@ -271,11 +271,11 @@ SNAKE_READ_BUTTONS:
     CHECK_DOWN:
         JB P1.1, CHECK_UP
         CLR    A
-        MOV    SNAKE_ADD_Y_ADDRESS,A
+        MOV    SNAKE_ADD_X_ADDRESS,A
         CJNE   A,#0FFH,NOT_EQUAL_CHECK_DOWN
         MOV    A,SNAKE_ADD_Y_ADDRESS
         CPL    A
-        JZ     NOT_EQUAL_CHECK_DOWN
+        JZ     CHECK_DOWN_ELSE
         
         NOT_EQUAL_CHECK_DOWN:
             MOV    SNAKE_ADD_Y_ADDRESS,#001H
