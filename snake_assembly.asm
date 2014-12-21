@@ -86,6 +86,9 @@ SNAKE_INIT:
     MOV @R0, #04h
 
     LCALL RAND8 ; gera um numero aleatorio no acumulador
+    MOV B, #SNAKE_SCREEN_WIDTH
+    DIV AB
+    MOV A, B
     MOV R0, #SNAKE_X_ARRAY_START_ADDRESS
     MOV @R0, A ; seta posicao X inicial da comida ; x[0] = rand
     INC R0
@@ -98,6 +101,9 @@ SNAKE_INIT:
     MOV @R0 #00h ; x[3] = 1
     
     LCALL RAND8 ; gera um numero aleatorio no acumulador
+    MOV B, #SNAKE_SCREEN_HEIGHT
+    DIV AB
+    MOV A, B
     MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
     MOV @R0, A ; seta posicao Y inicial da comida ; y[0] = rand
     INC R0
