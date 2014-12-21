@@ -29,26 +29,25 @@ j SET 0x60
 SNAKE_PRE_SCREEN_Y_START_ADDRESS SET 0x00
 
 code at 0
-    MOV SP, #0D0h
+    MOV SP, #080h
     ljmp SNAKE_MAIN
 
 SNAKE_MAIN:
     LCALL LCD_INIT
     ; limpa a regiao de memoria da Snake
-    ;LCALL SNAKE_CLEAR_INTERNAL_MEMORY
+    LCALL SNAKE_CLEAR_INTERNAL_MEMORY
     ; configura o estado inicial da Snake
-    ;LCALL SNAKE_INIT
+    LCALL SNAKE_INIT
     SNAKE_MAIN_LOOP:
         ; le a memoria da Snake e converte para informacao pre-tela
-        ;LCALL SNAKE_CONVERT_MEMORY
+        LCALL SNAKE_CONVERT_MEMORY
         ; le e regiao de memoria que armazena 
         ; as informacoes da Snake e imprime na tela
-        ;LCALL NTMJ_DRAW_TO_LCD
+        LCALL NTMJ_DRAW_TO_LCD
         ; le os botoes e atualiza a memoria
-        ;LCALL SNAKE_READ_BUTTONS
+        LCALL SNAKE_READ_BUTTONS
         ; atualiza a regiao de memoria da Snake
-        ;LCALL SNAKE_UPDATE
-        LCALL FMG_DRAW_END
+        LCALL SNAKE_UPDATE
         SJMP SNAKE_MAIN_LOOP
     RET
 
@@ -69,131 +68,6 @@ SNAKE_CLEAR_INTERNAL_MEMORY:
         MOV @R0, #000h
         INC R0
         DJNZ R1, SNAKE_CLEAR_Y_MEMORY_LOOP_START
-    RET
-
-code
-    FMG_DRAW_END:
-    PUSH PSW
-    
-    LCALL LCD_CLEAR
-
-    ;;;;;;;;;
-    ;; THE ;;
-    ;;;;;;;;;
-    MOV lcd_X, #004h
-    MOV lcd_Y, #001h
-    LCALL LCD_XY    
-    
-    MOV R4, #00Eh
-    FMG_DRAW_END_T_TOP:
-        MOV lcd_bus, #0FFh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_T_TOP
-    
-    MOV R3, #005h
-    FMG_DRAW_END_T_H_TOP:
-        MOV lcd_bus, #000h
-        LCALL LCD_DRAW
-        DJNZ R3, FMG_DRAW_END_T_H_TOP
-        
-    MOV R4, #005h
-    FMG_DRAW_END_H1_TOP:
-        MOV lcd_bus, #0FFh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_H1_TOP
-    MOV R4, #005h
-    FMG_DRAW_END_H2_TOP:
-        MOV lcd_bus, #0F0h
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_H2_TOP
-    MOV R4, #005h
-    FMG_DRAW_END_H3_TOP:
-        MOV lcd_bus, #0FFh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_H3_TOP
-    
-    MOV R3, #005h
-    FMG_DRAW_END_H_E_TOP:
-        MOV lcd_bus, #000h
-        LCALL LCD_DRAW
-        DJNZ R3, FMG_DRAW_END_H_E_TOP
-    
-    MOV R4, #005h
-    FMG_DRAW_END_E_TOP:
-        MOV lcd_bus, #0FFh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_E_TOP
-    MOV R4, #005h
-    FMG_DRAW_END_E2_TOP:
-        MOV lcd_bus, #0CFh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_E2_TOP
-    MOV R4, #005h
-    FMG_DRAW_END_E3_TOP:
-        MOV lcd_bus, #00Fh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_E3_TOP
-    
-    ;Linha 2
-    MOV lcd_X, #008h
-    MOV lcd_Y, #002h
-    LCALL LCD_XY
-    
-    MOV R4, #005h
-    FMG_DRAW_END_T_MIDDLE:
-        MOV lcd_bus, #0FFh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_T_MIDDLE
-    
-    MOV R3, #00Ah
-    FMG_DRAW_END_T_H_MIDDLE:
-        MOV lcd_bus, #000h
-        LCALL LCD_DRAW
-        DJNZ R3, FMG_DRAW_END_T_H_MIDDLE
-    
-    MOV R4, #005h
-    FMG_DRAW_END_H1_MIDDLE:
-        MOV lcd_bus, #0FFh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_H1_MIDDLE
-
-    MOV R4, #005h
-    FMG_DRAW_END_H2_MIDDLE:
-        MOV lcd_bus, #00Fh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_H2_MIDDLE
-    
-    MOV R4, #005h
-    FMG_DRAW_END_H3_MIDDLE:
-        MOV lcd_bus, #0FFh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_H3_MIDDLE
-    
-    MOV R3, #005h
-    FMG_DRAW_END_H_E_MIDDLE:
-        MOV lcd_bus, #000h
-        LCALL LCD_DRAW
-        DJNZ R3, FMG_DRAW_END_H_E_MIDDLE
-        
-    MOV R4, #005h
-    FMG_DRAW_END_E_BOTTOM:
-        MOV lcd_bus, #0FFh
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_E_BOTTOM
-    MOV R4, #005h
-    FMG_DRAW_END_E2_BOTTOM:
-        MOV lcd_bus, #0F3h
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_E2_BOTTOM
-    MOV R4, #005h
-    FMG_DRAW_END_E3_BOTTOM:
-        MOV lcd_bus, #0F0h
-        LCALL LCD_DRAW
-        DJNZ R4, FMG_DRAW_END_E3_BOTTOM
-    
-    FMG_DRAW_END_ETERNAL:
-        JMP FMG_DRAW_END_ETERNAL
-    POP PSW
     RET
 
 code
