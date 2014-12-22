@@ -2,7 +2,7 @@ $include(REG52.inc)
 $include(Random.asm)
 $include(LCD.asm)
 
-SNAKE_MAX_SIZE SET 0x09
+SNAKE_MAX_SIZE SET 0x20
 
 SNAKE_SCREEN_WIDTH SET 0x54
 SNAKE_SCREEN_HEIGHT SET 0x30
@@ -16,17 +16,17 @@ SNAKE_ADD_Y_ADDRESS SET 0x31
 SNAKE_SIZE_ADDRESS SET 0x32
 
 ; variaveis globais temporarias (em minusculo!)
-x_temp SET 0x56
-y_temp SET 0x57
-k SET 0x58
-i SET 0x59
-j SET 0x60
+x_temp SET 0x33
+y_temp SET 0x34
+k SET 0x35
+i SET 0x36
+j SET 0x37
 
 
 SNAKE_PRE_SCREEN_Y_START_ADDRESS SET 0x00
 
 code at 0
-    MOV SP, #068h
+    MOV SP, #080h
     ljmp SNAKE_MAIN
     
 
@@ -71,9 +71,13 @@ SNAKE_CLEAR_INTERNAL_MEMORY:
 
 code
 SNAKE_INIT:
+    ; zera o gerador de num aleatorio
+    MOV R0, 0x20
+    MOV @R0, #000H
+    
     ; a snake comeca com duas partes
     MOV R0, #SNAKE_SIZE_ADDRESS
-    MOV @R0, #04h
+    MOV @R0, #06h
 
     LCALL RAND8 ; gera um numero aleatorio no acumulador
     MOV B, #SNAKE_SCREEN_WIDTH
@@ -89,6 +93,10 @@ SNAKE_INIT:
     MOV @R0 #03h ; x[3] = 1
     INC R0
     MOV @R0 #03h ; x[3] = 1
+    INC R0
+    MOV @R0 #03h ; x[3] = 1
+    INC R0
+    MOV @R0 #03h ; x[3] = 1
     
     LCALL RAND8 ; gera um numero aleatorio no acumulador
     MOV B, #SNAKE_SCREEN_HEIGHT
@@ -97,7 +105,11 @@ SNAKE_INIT:
     MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
     MOV @R0, A ; seta posicao Y inicial da comida ; y[0] = rand
     INC R0
-    MOV @R0, #04H ; y[1] = 2
+    MOV @R0, #06H ; y[1] = 2
+    INC R0
+    MOV @R0, #05H ; y[2] = 1
+    INC R0
+    MOV @R0, #04H ; y[2] = 1
     INC R0
     MOV @R0, #03H ; y[2] = 1
     INC R0
@@ -136,7 +148,7 @@ SNAKE_UPDATE:
     MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
     INC R0
     ADD A, @R0 ; A <- addy + y[1]
-    MOV R5, A ; R5 <- addy + y[1]
+    MOV R7, A ; R5 <- addy + y[1]
     MOV R6, SNAKE_Y_ARRAY_START_ADDRESS ; R6 <- y[0]
     MOV B, R6
     CJNE A, B, SNAKE_UPDATE_END_CHECK_FOOD
@@ -155,10 +167,15 @@ SNAKE_UPDATE:
     MOV A, B
     MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
     MOV @R0, A
+    SJMP SNAKE_UPDATE_END
+    
+    ; incrementar SNAKE_SIZE_ADDRESS
+    MOV R0, #SNAKE_SIZE_ADDRESS
+    MOV A, @R0
+    INC A
+    MOV @R0, A
     
     SNAKE_UPDATE_END_CHECK_FOOD:
-    
-    
         MOV R0, #SNAKE_SIZE_ADDRESS
         MOV A, @R0
         MOV R3, A
@@ -203,6 +220,7 @@ SNAKE_UPDATE:
            ADD A, @R0
            MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS + 01H
            MOV @R0, A
+    SNAKE_UPDATE_END:
     RET
     
 code
@@ -315,7 +333,7 @@ SNAKE_READ_BUTTONS:
             MOV    SNAKE_ADD_Y_ADDRESS,#0FFH
         
     CHECK_UP:
-        JB     P1.1, CHECK_BUTTONS_END
+        JB     P1.1, CHECK_RESET
         CLR    A
         MOV    SNAKE_ADD_X_ADDRESS,A
         MOV    A,SNAKE_ADD_Y_ADDRESS
@@ -325,7 +343,12 @@ SNAKE_READ_BUTTONS:
         RET
         CHECK_UP_ELSE:
             MOV    SNAKE_ADD_Y_ADDRESS,#001H
+        
+    CHECK_RESET:
+        JB P1.4, CHECK_BUTTONS_END
+        LJMP SNAKE_MAIN
         CHECK_BUTTONS_END:
+            
     RET
     
 code

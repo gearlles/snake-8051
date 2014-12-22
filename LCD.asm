@@ -37,7 +37,7 @@ LCD_INIT:
     MOV lcd_bus, #021h  
     LCALL LCD_SEND_COMMAND
     
-    MOV lcd_bus, #0C2h  
+    MOV lcd_bus, #0A0h  
     LCALL LCD_SEND_COMMAND
     
     MOV lcd_bus, #011h 
