@@ -1,6 +1,6 @@
 $include(REG52.inc)
 $include(Random.asm)
-$include(LCD.asm)
+;$include(LCD.asm)
 
 SNAKE_MAX_SIZE SET 0x20
 
@@ -21,6 +21,16 @@ y_temp SET 0x34
 k SET 0x35
 i SET 0x36
 j SET 0x37
+
+lcd_ce    SET P1.6 ;Chip enabled
+lcd_reset SET P1.5 ;Reset
+lcd_dc    SET P1.7 ;Data Comando
+lcd_clk   SET P3.1 ;Clock
+lcd_din   SET P3.0 ;Data in
+
+lcd_bus   SET R0 ;Posição a ser utilizada pelo LCD para acesso bit-a-bit
+lcd_X     SET R1 ;
+lcd_Y     SET R2 ;
 
 
 SNAKE_PRE_SCREEN_Y_START_ADDRESS SET 0x00
@@ -77,9 +87,10 @@ SNAKE_INIT:
     
     ; a snake comeca com duas partes
     MOV R0, #SNAKE_SIZE_ADDRESS
-    MOV @R0, #06h
+    MOV @R0, #02h
 
-    LCALL RAND8 ; gera um numero aleatorio no acumulador
+    ;LCALL RAND8 ; gera um numero aleatorio no acumulador
+    MOV A, #03h
     MOV B, #SNAKE_SCREEN_WIDTH
     DIV AB
     MOV A, B
@@ -89,16 +100,10 @@ SNAKE_INIT:
     MOV @R0, #03h ; x[1] = 1
     INC R0
     MOV @R0 #03h ; x[2] = 1
-    INC R0
-    MOV @R0 #03h ; x[3] = 1
-    INC R0
-    MOV @R0 #03h ; x[3] = 1
-    INC R0
-    MOV @R0 #03h ; x[3] = 1
-    INC R0
-    MOV @R0 #03h ; x[3] = 1
+
     
-    LCALL RAND8 ; gera um numero aleatorio no acumulador
+    ;LCALL RAND8 ; gera um numero aleatorio no acumulador
+    MOV A, #08h
     MOV B, #SNAKE_SCREEN_HEIGHT
     DIV AB
     MOV A, B
@@ -108,14 +113,7 @@ SNAKE_INIT:
     MOV @R0, #06H ; y[1] = 2
     INC R0
     MOV @R0, #05H ; y[2] = 1
-    INC R0
-    MOV @R0, #04H ; y[2] = 1
-    INC R0
-    MOV @R0, #03H ; y[2] = 1
-    INC R0
-    MOV @R0, #02H ; y[2] = 1
-    INC R0
-    MOV @R0, #01H ; y[2] = 1
+
     
     MOV R0, #SNAKE_ADD_X_ADDRESS
     MOV @R0, #00H
@@ -153,6 +151,59 @@ SNAKE_UPDATE:
     MOV B, R6
     CJNE A, B, SNAKE_UPDATE_END_CHECK_FOOD
     
+    ; cresce o corpo
+    MOV R0, #SNAKE_SIZE_ADDRESS
+        MOV A, @R0
+        MOV R3, A
+        LOOP_INCREASE_BODY:
+            MOV A, R3
+            CJNE A, #000h, INCREASE
+            SETB C
+        INCREASE:
+            JC AFTER_INCREASE_LOOP
+            
+            MOV    A, R3
+            ADD    A, #SNAKE_X_ARRAY_START_ADDRESS + 0FFH
+            MOV    R0, A
+            MOV    A, R3
+            ADD    A, #SNAKE_X_ARRAY_START_ADDRESS
+            MOV    R1, A
+            MOV    A, @R0
+            MOV    @R1, A
+            
+            MOV    A, R3
+            ADD    A, #SNAKE_Y_ARRAY_START_ADDRESS + 0FFH
+            MOV    R0, A
+            MOV    A, R3
+            ADD    A, #SNAKE_Y_ARRAY_START_ADDRESS
+            MOV    R1, A
+            MOV    A, @R0
+            MOV    @R1, A
+            
+            DEC R3
+            SJMP LOOP_INCREASE_BODY
+        AFTER_INCREASE_LOOP:
+           MOV R0, #SNAKE_ADD_X_ADDRESS
+           MOV A, @R0
+           MOV R0, #SNAKE_X_ARRAY_START_ADDRESS + 02H
+           ADD A, @R0
+           MOV R0, #SNAKE_X_ARRAY_START_ADDRESS + 01H
+           MOV @R0, A
+           
+           MOV R0, #SNAKE_ADD_Y_ADDRESS
+           MOV A, @R0
+           MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS + 02H
+           ADD A, @R0
+           MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS + 01H
+           MOV @R0, A
+
+    MOV R0, #SNAKE_X_ARRAY_START_ADDRESS
+    MOV A, R5
+    MOV @R0, A
+    MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
+    MOV A, R7
+    MOV @R0, A
+    
     ; posiciona nova comida
     LCALL RAND8 ; gera um numero aleatorio no acumulador
     MOV B, #14h
@@ -167,13 +218,14 @@ SNAKE_UPDATE:
     MOV A, B
     MOV R0, #SNAKE_Y_ARRAY_START_ADDRESS
     MOV @R0, A
-    SJMP SNAKE_UPDATE_END
     
     ; incrementar SNAKE_SIZE_ADDRESS
     MOV R0, #SNAKE_SIZE_ADDRESS
     MOV A, @R0
     INC A
     MOV @R0, A
+    
+    ;SJMP SNAKE_UPDATE_END
     
     SNAKE_UPDATE_END_CHECK_FOOD:
         MOV R0, #SNAKE_SIZE_ADDRESS
@@ -554,4 +606,153 @@ LCD_ACC_DRAW:
     POP ACC
     ret
 
+code ;ROTINA para inicialização do LCD, deve ser chamada por um CALL
+LCD_INIT:
+    PUSH ACC ;Acumulador para pilha
+    PUSH PSW ;Guardar a infromação do banco de registradores que está sendo utilizado
+    SETB RS1
+    CLR RS0
+    SETB lcd_reset ;RESET
+    SETB lcd_ce    ;Set Chip Enabled
+    ;CLR lcd_reset
+    LCALL BIG_DELAY
+    ;SETB lcd_reset ;RESET
+    
+    ;Rotina de inicialização
+    MOV lcd_bus, #021h  
+    LCALL LCD_SEND_COMMAND
+    
+    MOV lcd_bus, #0A0h  
+    LCALL LCD_SEND_COMMAND
+    
+    MOV lcd_bus, #011h 
+    LCALL LCD_SEND_COMMAND
+    
+    MOV lcd_bus, #020h 
+    LCALL LCD_SEND_COMMAND
+    
+    MOV lcd_bus, #009h 
+    LCALL LCD_SEND_COMMAND
+    
+    LCALL LCD_CLEAR
+    
+    MOV lcd_bus, #008h 
+    LCALL LCD_SEND_COMMAND
+    
+    MOV lcd_bus, #00Ch 
+    LCALL LCD_SEND_COMMAND
+    
+    POP PSW
+    POP ACC
+    ret
+
+code ;Desenha um byte na tela
+LCD_DRAW:
+    LCALL LCD_SEND_DATA
+    ret
+
+code
+LCD_SEND_SERIAL_DATA: ;Dados vem na posição R0, R7 serve como contador (utiliza pag2)
+    MOV R7, #008h 
+    MOV A, lcd_bus
+    LCD_SEND_SERIAL_DATA_INTERNAL_LOOP:
+        CLR lcd_clk ;Clock para nivel alto
+        JB ACC.7, LCD_SEND_SERIAL_DATA_NOT_ZERO
+            CLR lcd_din
+            SJMP LCD_SERIAL_END_IF
+        LCD_SEND_SERIAL_DATA_NOT_ZERO:
+            SETB lcd_din
+        LCD_SERIAL_END_IF:
+        SETB lcd_clk 
+        RL A
+        DJNZ R7, LCD_SEND_SERIAL_DATA_INTERNAL_LOOP
+    ret
+
+code
+LCD_SEND_COMMAND:
+; Registrador R0 deve conter o comando a ser enviado
+    PUSH ACC ;Acumulador para pilha
+    PUSH PSW ;Guardar a infromação do banco de registradores que está sendo utilizado
+    SETB RS1
+    CLR RS0
+    CLR lcd_dc ;Modo comando
+    CLR lcd_ce ;Ativa o display
+    LCALL LCD_SEND_SERIAL_DATA
+    SETB lcd_ce ;Desativa o display
+    ;Volta os registradores PSW e ACC respectivamente
+    POP PSW
+    POP ACC
+    ret
+
+code
+LCD_SEND_DATA:
+; Registrador R0 deve conter o dado a ser enviado
+    PUSH ACC ;Acumulador para pilha
+    PUSH PSW ;Guardar a infromação do banco de registradores que está sendo utilizado
+    SETB RS1
+    CLR RS0
+    SETB lcd_dc ;Modo Dados
+    CLR lcd_ce ;Ativa o display
+    LCALL LCD_SEND_SERIAL_DATA
+    SETB lcd_ce ;Ativa o display
+    ;Volta os registradores PSW e ACC respectivamente
+    POP PSW
+    POP ACC
+    ret
+code
+LCD_XY:
+    PUSH ACC ;Acumulador para pilha
+    PUSH PSW ;Guardar a infromação do banco de registradores que está sendo utilizado
+    SETB RS1
+    CLR RS0
+    ;080h X R1
+    ;040h Y R2
+    ;Recalcular o valor de Y (R2)
+    MOV A, lcd_Y
+    ORL A, #040h ;Sem garantia que o valor seja válido
+    MOV lcd_bus, A
+    LCALL LCD_SEND_COMMAND
+    ;Recalcular valor de X (R1)
+    MOV A, lcd_X
+    ORL A, #080h ;Sem garantia que o valor seja válido
+    MOV lcd_bus, A
+    LCALL LCD_SEND_COMMAND
+    POP PSW
+    POP ACC
+    ret
+
+code
+LCD_CLEAR:
+    PUSH ACC 
+    PUSH PSW 
+    SETB RS1
+    CLR RS0
+    MOV lcd_X, #000h
+    MOV lcd_Y, #000h
+    ; 0-83 x 0-5
+    
+    MOV R3, #006h
+    LCD_CLEAR_INTERNAL_LOOP_LINE:
+        MOV R2, #054h
+        LCD_CLEAR_INTERNAL_LOOP_COLUMN:
+            MOV lcd_bus, #000h
+            LCALL LCD_SEND_DATA
+            DJNZ R2, LCD_CLEAR_INTERNAL_LOOP_COLUMN
+            DJNZ R3, LCD_CLEAR_INTERNAL_LOOP_LINE
+    POP PSW
+    POP ACC
+    ret
+
+code
+BIG_DELAY:
+        MOV R5, #10d
+    INIT_DELAY_3:
+        MOV R6, #255d
+    INIT_DELAY_2:
+        MOV R7, #255d
+    INIT_DELAY:    
+        DJNZ R7, INIT_DELAY
+        DJNZ R6, INIT_DELAY_2
+        DJNZ R5, INIT_DELAY_3
+    ret
 END
