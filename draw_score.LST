@@ -1,0 +1,410 @@
+MACRO ASSEMBLER DRAW_SCORE                                 12/21/14 22:53:19 PAGE     1
+
+
+DOS MACRO ASSEMBLER MA51 V06.16.13.326
+OBJECT MODULE PLACED IN D:\DROPBOX\E-COMP\9º PERíODO\MICROCONTROLADORES\SNAKE\DRAW_SCORE.OBJ
+ASSEMBLER INVOKED BY: QUIET GENERATEDEPFILE EP SYNTAX(ASM51) PR XR PL(60) PW(80) DB OJ(D:\DROPBOX\E-COMP\9º PERíODO\MICROCONTROLADORES\SNAKE\DRAW_SCORE.OBJ) PIN(C:\RAISONANCE\RIDE\INC;C:\RAISONANCE\RIDE\INC\51) 
+
+LOC     OBJ           LINE    SOURCE
+------                   1     CODE
+                         2         FMG_DRAW_SCORE: 
+0000    C000     F       3         PUSH PSW
+
+*** ERROR #46 IN LINE 3 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'PSW'
+0002    E500     F       4         MOV A, FMG_SCORE_1
+
+*** ERROR #46 IN LINE 4 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'FMG_SCORE_1'
+0004    750006   F       5         MOV B, #006H
+
+*** ERROR #46 IN LINE 5 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0007    A4               6         MUL AB
+0008    75000A   F       7         MOV B, #00AH
+
+*** ERROR #46 IN LINE 7 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+000B    84               8         DIV AB
+000C    FA               9         MOV R2, A; Estouro!
+000D    E500     F      10         MOV A, B; Unidades da parte High do score!
+
+*** ERROR #46 IN LINE 10 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+000F    F9              11         MOV R1, A
+0010    E500     F      12         MOV A, FMG_SCORE_0
+
+*** ERROR #46 IN LINE 12 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'FMG_SCORE_0'
+0012    75000A   F      13         MOV B, #00AH
+
+*** ERROR #46 IN LINE 13 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0015    84              14         DIV AB
+0016    FF              15         MOV R7, A ;Divisão
+0017    E500     F      16         MOV A, B
+
+*** ERROR #46 IN LINE 16 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0019    29              17         ADD A, R1
+001A    F9              18         MOV R1, A 
+001B    75000A   F      19         MOV B, #00AH
+
+*** ERROR #46 IN LINE 19 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+001E    84              20         DIV AB
+001F    2A              21         ADD A, R2
+0020    FA              22         MOV R2, A
+0021    E500     F      23         MOV A, B
+
+*** ERROR #46 IN LINE 23 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0023    F9              24         MOV R1, A ;Unidades!
+0024    EF              25         MOV A, R7
+0025    3400            26         ADDC A, #000H
+0027    FF              27         MOV R7, A
+                        28         
+0028    E500     F      29         MOV A, FMG_SCORE_1
+
+*** ERROR #46 IN LINE 29 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'FMG_SCORE_1'
+002A    750005   F      30         MOV B, #005H
+
+*** ERROR #46 IN LINE 30 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+002D    A4              31         MUL AB
+002E    2A              32         ADD A, R2
+002F    75000A   F      33         MOV B, #00AH
+
+*** ERROR #46 IN LINE 33 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0032    84              34         DIV AB
+0033    FB              35         MOV R3, A;Estouro
+0034    E500     F      36         MOV A, B; Dezenas da parte High do score!
+
+*** ERROR #46 IN LINE 36 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0036    FA              37         MOV R2, A
+0037    EF              38         MOV A, R7
+0038    75000A   F      39         MOV B, #00AH
+
+*** ERROR #46 IN LINE 39 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+003B    84              40         DIV AB
+003C    FF              41         MOV R7, A ; Divisão
+003D    E500     F      42         MOV A, B
+
+*** ERROR #46 IN LINE 42 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+003F    2A              43         ADD A, R2
+0040    FA              44         MOV R2, A ;Dezenas
+0041    75000A   F      45         MOV B, #00AH
+
+*** ERROR #46 IN LINE 45 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0044    84              46         DIV AB
+0045    2B              47         ADD A, R3
+0046    FB              48         MOV R3, A
+0047    E500     F      49         MOV A, B
+
+*** ERROR #46 IN LINE 49 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0049    FA              50         MOV R2, A
+MACRO ASSEMBLER DRAW_SCORE                       12/21/14  22:53:19 PAGE     2
+                     
+004A    EF              51         MOV A, R7
+004B    3400            52         ADDC A, #000H
+004D    FF              53         MOV R7, A
+                        54         
+004E    E500     F      55         MOV A, FMG_SCORE_1
+
+*** ERROR #46 IN LINE 55 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'FMG_SCORE_1'
+0050    750002   F      56         MOV B, #002H
+
+*** ERROR #46 IN LINE 56 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0053    A4              57         MUL AB
+0054    2B              58         ADD A, R3
+0055    75000A   F      59         MOV B, #00AH
+
+*** ERROR #46 IN LINE 59 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0058    84              60         DIV AB
+0059    FC              61         MOV R4, A;Estouro
+005A    E500     F      62         MOV A, B; Centenas da parte High do score!
+
+*** ERROR #46 IN LINE 62 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+005C    FB              63         MOV R3, A
+005D    EF              64         MOV A, R7
+005E    75000A   F      65         MOV B, #00AH
+
+*** ERROR #46 IN LINE 65 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0061    84              66         DIV AB
+0062    FF              67         MOV R7, A ; Divisão
+0063    E500     F      68         MOV A,B
+
+*** ERROR #46 IN LINE 68 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0065    2B              69         ADD A, R3
+0066    FB              70         MOV R3, A ;Centenas
+0067    75000A   F      71         MOV B, #00AH
+
+*** ERROR #46 IN LINE 71 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+006A    84              72         DIV AB
+006B    2C              73         ADD A, R4
+006C    FC              74         MOV R4, A
+006D    E500     F      75         MOV A, B
+
+*** ERROR #46 IN LINE 75 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+006F    FB              76         MOV R3, A
+0070    EF              77         MOV A, R7
+0071    3400            78         ADDC A, #000H
+0073    FF              79         MOV R7, A
+                        80         
+0074    E9              81         MOV A, R1
+0075    C000     F      82         PUSH ACC
+
+*** ERROR #46 IN LINE 82 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'ACC'
+0077    EA              83         MOV A, R2
+0078    C000     F      84         PUSH ACC
+
+*** ERROR #46 IN LINE 84 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'ACC'
+007A    EB              85         MOV A, R3
+007B    C000     F      86         PUSH ACC
+
+*** ERROR #46 IN LINE 86 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'ACC'
+007D    EC              87         MOV A, R4
+007E    C000     F      88         PUSH ACC
+
+*** ERROR #46 IN LINE 88 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'ACC'
+                        89         
+                        90         ;;;;;;;;;;;;;
+                        91         ;; DESENHO ;;
+                        92         ;;;;;;;;;;;;;
+0080    D200     F      93         SETB RS1
+
+*** ERROR #46 IN LINE 93 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'RS1'
+0082    C200     F      94         CLR RS0
+
+*** ERROR #46 IN LINE 94 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'RS0'
+                        95         
+0084    900000   F      96         MOV DPTR, #FMG_NUMBERS_FONT
+
+*** ERROR #46 IN LINE 96 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'FMG_NUMBERS_FONT'
+0087    7B00            97         MOV R3, #000H
+                        98         ;Milhares
+0089    D000     F      99         POP ACC
+
+*** ERROR #46 IN LINE 99 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'ACC'
+008B    75003C   F     100         MOV LCD_X, #03CH
+
+*** ERROR #46 IN LINE 100 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_X'
+008E    750000   F     101         MOV LCD_Y, #000H
+
+*** ERROR #46 IN LINE 101 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_Y'
+0091    120000   F     102         LCALL LCD_XY
+
+*** ERROR #46 IN LINE 102 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_XY'
+                       103         
+0094    750003   F     104         MOV B, #003H
+
+*** ERROR #46 IN LINE 104 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0097    A4             105         MUL AB
+0098    FC             106         MOV R4, A
+0099    93             107         MOVC A, @A+DPTR
+MACRO ASSEMBLER DRAW_SCORE                       12/21/14  22:53:19 PAGE     3
+                     
+009A    F500     F     108         MOV LCD_BUS, A    
+
+*** ERROR #46 IN LINE 108 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+009C    120000   F     109         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 109 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+009F    0C             110         INC R4
+00A0    EC             111         MOV A, R4
+00A1    93             112         MOVC A, @A+DPTR
+00A2    F500     F     113         MOV LCD_BUS, A
+
+*** ERROR #46 IN LINE 113 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+00A4    120000   F     114         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 114 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+00A7    0C             115         INC R4
+00A8    EC             116         MOV A, R4
+00A9    93             117         MOVC A, @A+DPTR
+00AA    F500     F     118         MOV LCD_BUS, A
+
+*** ERROR #46 IN LINE 118 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+00AC    120000   F     119         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 119 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+                       120         
+                       121         ;Centenas
+00AF    D000     F     122         POP ACC
+
+*** ERROR #46 IN LINE 122 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'ACC'
+00B1    750040   F     123         MOV LCD_X, #040H
+
+*** ERROR #46 IN LINE 123 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_X'
+00B4    750000   F     124         MOV LCD_Y, #000H
+
+*** ERROR #46 IN LINE 124 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_Y'
+00B7    120000   F     125         LCALL LCD_XY
+
+*** ERROR #46 IN LINE 125 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_XY'
+                       126         
+00BA    750003   F     127         MOV B, #003H
+
+*** ERROR #46 IN LINE 127 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+00BD    A4             128         MUL AB
+00BE    FC             129         MOV R4, A
+00BF    93             130         MOVC A, @A+DPTR
+00C0    F500     F     131         MOV LCD_BUS, A    
+
+*** ERROR #46 IN LINE 131 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+00C2    120000   F     132         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 132 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+00C5    0C             133         INC R4
+00C6    EC             134         MOV A, R4
+00C7    93             135         MOVC A, @A+DPTR
+00C8    F500     F     136         MOV LCD_BUS, A
+
+*** ERROR #46 IN LINE 136 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+00CA    120000   F     137         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 137 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+00CD    0C             138         INC R4
+00CE    EC             139         MOV A, R4
+00CF    93             140         MOVC A, @A+DPTR
+00D0    F500     F     141         MOV LCD_BUS, A
+
+*** ERROR #46 IN LINE 141 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+00D2    120000   F     142         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 142 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+                       143         
+                       144         ;Dezenas
+00D5    D000     F     145         POP ACC
+
+*** ERROR #46 IN LINE 145 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'ACC'
+00D7    750044   F     146         MOV LCD_X, #044H
+
+*** ERROR #46 IN LINE 146 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_X'
+00DA    750000   F     147         MOV LCD_Y, #000H
+
+*** ERROR #46 IN LINE 147 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_Y'
+00DD    120000   F     148         LCALL LCD_XY
+
+*** ERROR #46 IN LINE 148 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_XY'
+                       149         
+00E0    750003   F     150         MOV B, #003H
+
+*** ERROR #46 IN LINE 150 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+00E3    A4             151         MUL AB
+00E4    FC             152         MOV R4, A
+00E5    93             153         MOVC A, @A+DPTR
+00E6    F500     F     154         MOV LCD_BUS, A
+
+*** ERROR #46 IN LINE 154 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+00E8    120000   F     155         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 155 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+00EB    0C             156         INC R4
+00EC    EC             157         MOV A, R4
+00ED    93             158         MOVC A, @A+DPTR
+00EE    F500     F     159         MOV LCD_BUS, A
+
+*** ERROR #46 IN LINE 159 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+00F0    120000   F     160         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 160 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+00F3    0C             161         INC R4
+00F4    EC             162         MOV A, R4
+00F5    93             163         MOVC A, @A+DPTR
+00F6    F500     F     164         MOV LCD_BUS, A
+
+*** ERROR #46 IN LINE 164 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+MACRO ASSEMBLER DRAW_SCORE                       12/21/14  22:53:19 PAGE     4
+                     
+00F8    120000   F     165         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 165 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+                       166         
+                       167         ;Unidades
+00FB    D000     F     168         POP ACC
+
+*** ERROR #46 IN LINE 168 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'ACC'
+00FD    750048   F     169         MOV LCD_X, #048H
+
+*** ERROR #46 IN LINE 169 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_X'
+0100    750000   F     170         MOV LCD_Y, #000H
+
+*** ERROR #46 IN LINE 170 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_Y'
+0103    120000   F     171         LCALL LCD_XY
+
+*** ERROR #46 IN LINE 171 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_XY'
+0106    750003   F     172         MOV B, #003H
+
+*** ERROR #46 IN LINE 172 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'B'
+0109    A4             173         MUL AB
+010A    FC             174         MOV R4, A
+010B    93             175         MOVC A, @A+DPTR
+010C    F500     F     176         MOV LCD_BUS, A
+
+*** ERROR #46 IN LINE 176 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+010E    120000   F     177         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 177 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+0111    0C             178         INC R4
+0112    EC             179         MOV A, R4
+0113    93             180         MOVC A, @A+DPTR
+0114    F500     F     181         MOV LCD_BUS, A
+
+*** ERROR #46 IN LINE 181 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+0116    120000   F     182         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 182 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+0119    0C             183         INC R4
+011A    EC             184         MOV A, R4
+011B    93             185         MOVC A, @A+DPTR
+011C    F500     F     186         MOV LCD_BUS, A
+
+*** ERROR #46 IN LINE 186 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_BUS'
+011E    120000   F     187         LCALL LCD_DRAW
+
+*** ERROR #46 IN LINE 187 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'LCD_DRAW'
+0121    D000     F     188         POP PSW
+
+*** ERROR #46 IN LINE 188 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : UNDEFINED SYMBOL (PASS-2) 'PSW'
+0123    22             189         RET
+
+*** WARNING #87 IN LINE 189 OF D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\draw_score.asm : MISSING 'END' STATEMENT
+MACRO ASSEMBLER DRAW_SCORE                                 12/21/14 22:53:19 PAGE     0
+
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES             REFERENCES
+
+LCD_DRAW . . . . .  ? ADDR   0000H   A                          109 114 119 132 137 
+                                                                142 155 160 165 177 
+                                                                182 187 
+B. . . . . . . . .  ? ADDR   0000H   A                          5 7 10 13 16 19 23 
+                                                                30 33 36 39 42 45 
+                                                                49 56 59 62 65 68 
+                                                                71 75 104 127 150 
+                                                                172 
+FMG_DRAW_SCORE . .  C ADDR   0000H   R  SEG=?PR?DRAW_SCORE      2# 
+LCD_XY . . . . . .  ? ADDR   0000H   A                          102 125 148 171 
+FMG_SCORE_0. . . .  ? ADDR   0000H   A                          12 
+FMG_SCORE_1. . . .  ? ADDR   0000H   A                          4 29 55 
+ACC. . . . . . . .  ? ADDR   0000H   A                          82 84 86 88 99 122 
+                                                                145 168 
+?PR?DRAW_SCORE . .  C SEG    0124H      REL=UNIT                1# 
+LCD_X. . . . . . .  ? ADDR   0000H   A                          100 123 146 169 
+LCD_Y. . . . . . .  ? ADDR   0000H   A                          101 124 147 170 
+FMG_NUMBERS_FONT .  ? ADDR   0000H   A                          96 
+RS0. . . . . . . .  ? ADDR   0000H   A                          94 
+RS1. . . . . . . .  ? ADDR   0000H   A                          93 
+PSW. . . . . . . .  ? ADDR   0000H   A                          3 188 
+LCD_BUS. . . . . .  ? ADDR   0000H   A                          108 113 118 131 136 
+                                                                141 154 159 164 176 
+                                                                181 186 
+DRAW_SCORE . . . .  N NUMB   -----
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    292    ----
+   XDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+REGISTER BANK(S) USED : 0 
+
+ASSEMBLY COMPLETE.   1 WARNING(S)  78 ERROR(S)
