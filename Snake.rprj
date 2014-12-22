@@ -1,4 +1,4 @@
 
 <Project Header="Project 'Snake'" Path=".\Snake.rprj" Project="Yes" OutputFile="" sate="96" ActiveApp="Snake" >
-	<ApplicationBuild Header="Snake" Extern=".\Snake.rapp" Path=".\Snake.rapp" OutputFile=".\Snake.aof" sate="98" />
+	<ApplicationBuild Header="Snake" Extern=".\Snake.rapp" Path=".\Snake.rapp" OutputFile=".\Snake.aof" sate="96" />
 </Project>

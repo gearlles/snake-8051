@@ -1,0 +1,137 @@
+RC51 COMPILER V06.16.13.326,  TESTE              12/17/14  18:08:45  PAGE  1
+
+QCW(0x00002F32)
+
+DOS RC51 COMPILER V06.16.13.326, COMPILATION OF MODULE TESTE     
+OBJECT MODULE PLACED IN D:\Dropbox\E-COMP\9º Período\Microcontroladores\Snake\te
+            -ste.obj
+COMPILER INVOKED BY: QUIET GENERATEDEPFILE OJ(D:\Dropbox\E-COMP\9º Período\Micro
+            -controladores\Snake\teste.obj) PIN(C:\Raisonance\Ride\Inc;C:\Raison
+            -ance\Ride\Inc\51) PIN(C:\Raisonance\Ride\\inc\51) NOAM CD PR(D:\Dro
+            -pbox\E-COMP\9º Período\Microcontroladores\Snake\teste.lst) FP(NOFLO
+            -AT) IP NOIS UNSIGNEDCHAR ET(CHAR) PR PL(60) PW(80) OE(1) OT(7,SPEED
+            -) RB(0) MAXERR(25) MAXWAR(25) SM MOD517(NODP8,NOAU) 
+
+stmt level    source
+   1          #include <reg51.h>
+   2          
+   3          #define SNAKE_MAX_SIZE 20
+   4          #define SNAKE_SCREEN_WIDTH 84
+   5          #define SNAKE_SCREEN_HEIGHT 48
+   6          
+   7          unsigned char x[SNAKE_MAX_SIZE + 1];
+   8          unsigned char y[SNAKE_MAX_SIZE + 1];
+   9          unsigned char n;
+  10          // contador utilizado para iterar pela Snake, declarado como globa
+            -l pra economizar memória
+  11          unsigned char i;
+  12          
+  13          int colision()
+  14          {
+  15   1          bit k;
+  16   1          k = 0;
+  17   1          // colisão com as paredes
+  18   1          if (x[1] > SNAKE_SCREEN_WIDTH || y[1] > SNAKE_SCREEN_HEIGHT)
+  19   1              k = 1;
+  20   1          // colisão com o corpo
+  21   1          for (i = 2; i < n; i++)
+  22   1              if ((x[1] == x[i]) && (y[1] == y[i]))
+  23   1                  k = 1;
+  24   1          return k;
+  25   1      }
+  26          
+  27          void main(void)
+  28          {
+  29   1          if (colision()){
+  30   2              
+  31   2          }
+  32   1      }
+RC51 COMPILER V06.16.13.326,  TESTE              12/17/14  18:08:45  PAGE  3
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+            ; FUNCTION colision (BEGIN)
+                                           ; SOURCE LINE # 16 
+0000 C200    R      CLR    k
+                                           ; SOURCE LINE # 18 
+0002 E500    R      MOV    A,x+01H
+0004 B45401         CJNE   A,#054H,?LAB10
+0007 D3             SETB   C
+0008         ?LAB10:
+0008 5008           JNC    ?LAB9
+000A E500    R      MOV    A,y+01H
+000C B43001         CJNE   A,#030H,?LAB12
+000F D3             SETB   C
+0010         ?LAB12:
+0010 4002           JC     ?NXT4
+0012         ?LAB9:
+                                           ; SOURCE LINE # 19 
+0012 D200    R      SETB   k
+0014         ?NXT4:
+                                           ; SOURCE LINE # 21 
+0014 750002  R      MOV    i,#002H
+0017         ?FOR1:
+0017 E500    R      MOV    A,i
+0019 B50000  R      CJNE   A,n,?LAB14
+001C         ?LAB14:
+001C 501E           JNC    ?NXT5
+                                           ; SOURCE LINE # 22 
+001E E500    R      MOV    A,i
+0020 2400    R      ADD    A,#x
+0022 F8             MOV    R0,A
+0023 86F0           MOV    B,@R0
+0025 E500    R      MOV    A,x+01H
+0027 B5F00E         CJNE   A,B,?NXT6
+002A E500    R      MOV    A,i
+002C 2400    R      ADD    A,#y
+002E F9             MOV    R1,A
+002F 87F0           MOV    B,@R1
+0031 E500    R      MOV    A,y+01H
+0033 B5F002         CJNE   A,B,?NXT6
+                                           ; SOURCE LINE # 23 
+0036 D200    R      SETB   k
+0038         ?NXT6:
+                                           ; SOURCE LINE # 21 
+0038 0500    R      INC    i
+003A 80DB           SJMP   ?FOR1
+003C         ?NXT5:
+                                           ; SOURCE LINE # 24 
+003C A200    R      MOV    C,k
+003E E4             CLR    A
+003F 33             RLC    A
+0040 7E00           MOV    R6,#000H
+0042 FF             MOV    R7,A
+                                           ; SOURCE LINE # 25 
+0043 22             RET    
+
+            ; FUNCTION colision (END)
+
+            ; FUNCTION main (BEGIN)
+                                           ; SOURCE LINE # 29 
+RC51 COMPILER V06.16.13.326,  TESTE              12/17/14  18:08:45  PAGE  2
+
+0000 120000  R      LCALL  colision
+0003 EE             MOV    A,R6
+0004 4F             ORL    A,R7
+0005 6000           JZ     ?NXT9
+0007         ?NXT9:
+                                           ; SOURCE LINE # 32 
+0007 22             RET    
+
+            ; FUNCTION main (END)
+
+RC51 COMPILER V06.16.13.326,  TESTE              12/17/14  18:08:45  PAGE  4
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     76    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     44    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+RC51 COMPILATION COMPLETE.  0 WARNING,  0 ERROR

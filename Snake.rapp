@@ -1,5 +1,5 @@
 
-<ApplicationBuild Header="Snake" Extern=".\Snake.rapp" Path=".\Snake.rapp" OutputFile=".\Snake.aof" sate="98" >
+<ApplicationBuild Header="Snake" Extern=".\Snake.rapp" Path=".\Snake.rapp" OutputFile=".\Snake.aof" sate="96" >
 	<NodeASM Path=".\snake_assembly.asm" Header="snake_assembly.asm" Marker="-1" OutputFile=".\snake_assembly.obj" sate="0" />
 	<NodeASM Path=".\Random.asm" Header="Random.asm" Marker="0" OutputFile=".\Random.obj" sate="0" >
 		<Options>
@@ -19,6 +19,19 @@
 				<Set Header="NodeASM" >
 					<Section Header="Build" >
 						<Property Header="Exclude" Value="Yes" Removable="1" />
+						<Property Header="LinkExclude" Value="Yes" Removable="1" />
+					</Section>
+				</Set>
+			</Config>
+		</Options>
+	</NodeASM>
+	<NodeASM Path=".\draw_end.asm" Header="draw_end.asm" Marker="0" OutputFile=".\draw_end.obj" sate="2" >
+		<Options>
+			<Config Header="Standard" >
+				<Set Header="NodeASM" >
+					<Section Header="Build" >
+						<Property Header="Exclude" Value="Yes" Removable="1" />
+						<Property Header="LinkExclude" Value="No" Removable="1" />
 					</Section>
 				</Set>
 			</Config>
